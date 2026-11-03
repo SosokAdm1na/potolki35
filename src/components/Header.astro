@@ -1,0 +1,64 @@
+---
+import { site } from '../config';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const nav = [
+  { href: '/potolki/', label: 'Потолки' },
+  { href: '/ceny/', label: 'Цены и калькулятор' },
+  { href: '/raboty/', label: 'Наши работы' },
+  { href: '/kontakty/', label: 'Контакты' },
+];
+const path = Astro.url.pathname;
+---
+<header class="sticky top-0 z-40 border-b border-transparent bg-paper/80 backdrop-blur-xl transition-colors" data-header>
+  <div class="container-x flex h-16 items-center justify-between gap-4 lg:h-20">
+    <a href="/" class="shrink-0" aria-label={`${site.name} — на главную`}><Logo /></a>
+
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="Основное меню">
+      {nav.map((n) => (
+        <a
+          href={n.href}
+          class:list={[
+            'rounded-full px-4 py-2 text-[15px] font-medium transition hover:bg-ink/5',
+            path.startsWith(n.href) && 'bg-ink/5',
+          ]}
+        >{n.label}</a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={site.phoneHref} class="hidden flex-col items-end leading-tight sm:flex" data-goal="phone_click">
+        <span class="text-[17px] font-bold tracking-tight">{site.phone}</span>
+        <span class="text-xs text-muted">{site.workHours}</span>
+      </a>
+      <button type="button" class="btn-primary ml-3 hidden !py-3 md:inline-flex" data-open-lead data-lead-source="Шапка сайта">
+        Бесплатный замер
+      </button>
+      <a href={site.phoneHref} class="grid size-11 place-items-center rounded-full bg-ink text-white sm:hidden" aria-label="Позвонить" data-goal="phone_click">
+        <Icon name="phone" />
+      </a>
+      <button type="button" class="grid size-11 place-items-center rounded-full border border-ink/15 lg:hidden" aria-label="Меню" data-menu-toggle>
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+
+  <div class="hidden border-t border-line bg-paper lg:hidden" data-menu>
+    <nav class="container-x flex flex-col py-3" aria-label="Мобильное меню">
+      {nav.map((n) => (
+        <a href={n.href} class="border-b border-line py-4 font-display text-lg last:border-0">{n.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('[data-header]');
+  const onScroll = () => header?.classList.toggle('!border-line', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  document.querySelector('[data-menu-toggle]')?.addEventListener('click', () => {
+    document.querySelector('[data-menu]')?.classList.toggle('hidden');
+  });
+</script>

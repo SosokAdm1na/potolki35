@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+const steps = [
+  { icon: 'phone', t: 'Заявка', d: 'Оставляете телефон — перезваниваем за 10 минут и договариваемся о замере.' },
+  { icon: 'ruler', t: 'Бесплатный замер', d: 'Замерщик приезжает с образцами, считает смету на месте. Цена фиксируется в договоре.' },
+  { icon: 'clock', t: 'Монтаж за 1 день', d: 'Бригада приезжает в удобное время. Мебель не выносим — укрываем плёнкой.' },
+  { icon: 'broom', t: 'Чисто после себя', d: 'Убираем мусор, проверяем свет и подписываем акт. Оплата — после приёмки.' },
+];
+---
+<section class="py-16 sm:py-24">
+  <div class="container-x">
+    <div class="mb-12 max-w-2xl">
+      <p class="eyebrow">Как работаем</p>
+      <h2 class="h2 mt-3">От звонка до готового потолка — 4 шага</h2>
+    </div>
+    <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {steps.map((s, i) => (
+        <li class="reveal relative flex flex-col gap-4 rounded-4xl border border-line bg-surface p-6" style={`transition-delay:${i * 80}ms`}>
+          <div class="flex items-center justify-between">
+            <span class="grid size-12 place-items-center rounded-2xl bg-paper"><Icon name={s.icon} class="size-6" /></span>
+            <span class="font-display text-5xl font-medium text-line">0{i + 1}</span>
+          </div>
+          <h3 class="text-lg font-medium">{s.t}</h3>
+          <p class="text-sm leading-relaxed text-muted">{s.d}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

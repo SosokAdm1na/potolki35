@@ -1,0 +1,22 @@
+---
+import { site } from '../config';
+import Icon from './Icon.astro';
+import LeadForm from './LeadForm.astro';
+---
+<dialog id="lead-modal" class="m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-ink/60 backdrop:backdrop-blur-sm sm:m-auto sm:h-auto sm:max-h-[92vh] sm:max-w-xl" aria-labelledby="lead-modal-title">
+  <div class="flex h-full flex-col overflow-y-auto bg-paper sm:rounded-4xl">
+    <div class="relative overflow-hidden bg-ink px-6 pb-6 pt-7 text-white sm:px-8">
+      <div class="light-line absolute inset-x-8 top-0"></div>
+      <button type="button" class="absolute right-4 top-4 grid size-10 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label="Закрыть" data-close-lead>
+        <Icon name="close" />
+      </button>
+      <p class="mb-2 inline-flex rounded-full bg-glow px-3 py-1 text-xs font-bold text-ink">−{site.discountPercent}% при заявке с сайта</p>
+      <h2 id="lead-modal-title" class="pr-10 text-2xl font-medium sm:text-[28px]">Бесплатный замер и точная смета</h2>
+      <p class="mt-2 text-sm text-white/70">Оставьте телефон — менеджер уточнит детали и подберёт удобное время замерщика.</p>
+      <div class="mt-4 hidden rounded-2xl bg-white/10 px-4 py-3 text-sm" data-calc-summary></div>
+    </div>
+    <div class="px-6 py-6 sm:px-8">
+      <LeadForm id="modal" source="Всплывающее окно" compact />
+    </div>
+  </div>
+</dialog>

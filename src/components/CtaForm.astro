@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import { site } from '../config';
+import LeadForm from './LeadForm.astro';
+import Icon from './Icon.astro';
+import photo from '../assets/photos/bedroom-warm.jpg';
+interface Props { source?: string; title?: string }
+const { source = 'Форма внизу страницы', title = 'Заберите скидку и бесплатный замер' } = Astro.props;
+---
+<section id="zayavka" class="py-16 sm:py-24">
+  <div class="container-x">
+    <div class="grid overflow-hidden rounded-[2.5rem] bg-surface lg:grid-cols-2">
+      <div class="relative hidden min-h-[560px] lg:block">
+        <Image src={photo} alt="Натяжной потолок в спальне" widths={[800, 1200]} sizes="50vw" class="absolute inset-0 size-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent"></div>
+        <div class="absolute inset-x-8 bottom-8 text-white">
+          <ul class="flex flex-col gap-3">
+            {['Замер и смета — 0 ₽', 'Цена фиксируется в договоре', 'Оплата после монтажа'].map((t) => (
+              <li class="flex items-center gap-3"><span class="grid size-7 place-items-center rounded-full bg-glow text-ink"><Icon name="check" class="size-4" /></span>{t}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="p-6 sm:p-10 lg:p-12">
+        <span class="inline-flex rounded-full bg-glow px-3 py-1 text-xs font-bold">−{site.discountPercent}% по заявке с сайта</span>
+        <h2 class="h2 mt-4">{title}</h2>
+        <p class="mb-8 mt-3 text-muted">Ответьте на пару вопросов — менеджер позвонит уже с примерным расчётом.</p>
+        <LeadForm id="cta" source={source} />
+      </div>
+    </div>
+  </div>
+</section>

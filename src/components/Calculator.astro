@@ -1,0 +1,207 @@
+---
+import { prices, site } from '../config';
+import Icon from './Icon.astro';
+
+interface Props { heading?: boolean }
+const { heading = true } = Astro.props;
+
+const counters = [
+  { key: 'spot', label: 'Точечные светильники', hint: `${prices.spotlight} ₽/шт`, max: 60 },
+  { key: 'chand', label: 'Люстры', hint: `${prices.chandelier} ₽/шт`, max: 10 },
+  { key: 'lines', label: 'Световые линии, м', hint: `${prices.lightLine} ₽/м`, max: 50 },
+  { key: 'pipe', label: 'Обход труб', hint: `${prices.pipe} ₽/шт`, max: 20 },
+];
+---
+<section id="calc" data-discount={site.discountPercent} class="relative overflow-hidden bg-ink py-16 text-white sm:py-24">
+  <div class="light-line absolute inset-x-[10%] top-0 opacity-70"></div>
+  <div class="pointer-events-none absolute -right-40 top-20 size-[500px] rounded-full bg-glow/10 blur-[120px]"></div>
+
+  <div class="container-x relative">
+    {heading && (
+      <div class="mb-10 grid gap-4 lg:mb-14 lg:grid-cols-2 lg:items-end">
+        <div>
+          <p class="eyebrow !text-white/50">Калькулятор</p>
+          <h2 class="h2 mt-3">Узнайте цену за&nbsp;30&nbsp;секунд</h2>
+        </div>
+        <p class="max-w-md text-white/60 lg:justify-self-end">Цена с материалами и монтажом. Точную смету замерщик составит бесплатно — и она не вырастет после монтажа.</p>
+      </div>
+    )}
+
+    <div class="grid gap-6 lg:grid-cols-[1.35fr_1fr]" data-calc>
+      <div class="flex flex-col gap-8 rounded-4xl border border-white/10 bg-white/[0.03] p-5 sm:p-8">
+        <!-- Площадь -->
+        <div>
+          <div class="mb-4 flex items-end justify-between gap-4">
+            <label for="calc-area" class="font-medium">Общая площадь потолков</label>
+            <div class="flex items-baseline gap-1">
+              <input id="calc-area-num" type="number" min="3" max="300" value="18" inputmode="numeric" class="w-20 rounded-xl bg-white/10 px-3 py-1.5 text-right font-display text-2xl outline-none focus:bg-white/15" aria-label="Площадь, м²" />
+              <span class="text-white/60">м²</span>
+            </div>
+          </div>
+          <input id="calc-area" type="range" min="3" max="150" value="18" class="w-full" />
+          <div class="mt-2 flex justify-between text-xs text-white/40"><span>3 м²</span><span>150 м²</span></div>
+        </div>
+
+        <!-- Комнаты -->
+        <div class="flex items-center justify-between gap-4">
+          <span class="font-medium">Количество помещений</span>
+          <div class="flex items-center gap-1 rounded-full bg-white/10 p-1" data-stepper="rooms" data-min="1" data-max="12">
+            <button type="button" class="grid size-9 place-items-center rounded-full hover:bg-white/10" data-dec aria-label="Меньше"><Icon name="minus" class="size-4" /></button>
+            <output class="w-8 text-center font-display text-lg" data-val>1</output>
+            <button type="button" class="grid size-9 place-items-center rounded-full hover:bg-white/10" data-inc aria-label="Больше"><Icon name="plus" class="size-4" /></button>
+          </div>
+        </div>
+
+        <!-- Полотно -->
+        <fieldset>
+          <legend class="mb-3 font-medium">Полотно</legend>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {Object.entries(prices.canvas).map(([k, c], i) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="canvas" value={k} class="peer sr-only" checked={i === 0} />
+                <span class="flex h-full flex-col gap-1 rounded-2xl border border-white/10 p-3.5 transition peer-checked:border-glow peer-checked:bg-glow/10 peer-focus-visible:outline-2 peer-focus-visible:outline-glow hover:border-white/30">
+                  <span class="font-medium">{c.label}</span>
+                  <span class="text-xs text-white/50">{c.perM2} ₽/м²</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- Профиль -->
+        <fieldset>
+          <legend class="mb-3 font-medium">Вид примыкания к стене</legend>
+          <div class="grid gap-2 sm:grid-cols-3">
+            {Object.entries(prices.profile).map(([k, p], i) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="profile" value={k} class="peer sr-only" checked={i === 0} />
+                <span class="flex h-full flex-col gap-1 rounded-2xl border border-white/10 p-3.5 transition peer-checked:border-glow peer-checked:bg-glow/10 peer-focus-visible:outline-2 peer-focus-visible:outline-glow hover:border-white/30">
+                  <span class="font-medium">{p.label}</span>
+                  <span class="text-xs text-white/50">{p.note}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- Счётчики -->
+        <div class="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {counters.map((c) => (
+            <div class="flex items-center justify-between gap-3">
+              <span class="flex flex-col"><span class="text-[15px] font-medium">{c.label}</span><span class="text-xs text-white/40">{c.hint}</span></span>
+              <div class="flex shrink-0 items-center gap-1 rounded-full bg-white/10 p-1" data-stepper={c.key} data-min="0" data-max={c.max}>
+                <button type="button" class="grid size-9 place-items-center rounded-full hover:bg-white/10" data-dec aria-label="Меньше"><Icon name="minus" class="size-4" /></button>
+                <output class="w-8 text-center font-display text-lg" data-val>0</output>
+                <button type="button" class="grid size-9 place-items-center rounded-full hover:bg-white/10" data-inc aria-label="Больше"><Icon name="plus" class="size-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Итог -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <div class="relative overflow-hidden rounded-4xl bg-paper p-6 text-ink sm:p-8">
+          <div class="absolute inset-x-0 top-0 h-1 bg-glow"></div>
+          <p class="text-sm font-medium text-muted">Примерная стоимость под ключ</p>
+          <p class="mt-2 font-display text-[44px] leading-none font-medium tracking-tight sm:text-[52px]" data-total>—</p>
+          <div class="mt-4 flex items-center gap-3 rounded-2xl bg-glow/20 px-4 py-3">
+            <span class="rounded-full bg-glow px-2.5 py-1 text-xs font-bold">−{site.discountPercent}%</span>
+            <span class="text-sm">По заявке с сайта: <b class="font-display text-lg" data-discounted>—</b></span>
+          </div>
+          <ul class="mt-6 flex flex-col gap-2 border-t border-line pt-5 text-sm" data-breakdown></ul>
+          <button type="button" class="btn-primary mt-6 w-full !py-4" data-open-lead data-with-calc data-lead-source="Калькулятор">
+            Зафиксировать цену и скидку <Icon name="arrow" />
+          </button>
+          <p class="mt-3 text-center text-xs text-muted">Без предоплаты. Замер и смета — бесплатно.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <script type="application/json" id="calc-prices" set:html={JSON.stringify(prices)} />
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  const P = JSON.parse(document.getElementById('calc-prices')?.textContent || '{}');
+  if (root && P.canvas) {
+    const range = root.querySelector<HTMLInputElement>('#calc-area')!;
+    const num = root.querySelector<HTMLInputElement>('#calc-area-num')!;
+    const out = {
+      total: root.querySelector<HTMLElement>('[data-total]')!,
+      disc: root.querySelector<HTMLElement>('[data-discounted]')!,
+      list: root.querySelector<HTMLElement>('[data-breakdown]')!,
+    };
+    const state: Record<string, number> = { rooms: 1, spot: 0, chand: 0, lines: 0, pipe: 0 };
+    const fmt = (n: number) => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+    const DISCOUNT = Number(document.querySelector('[data-discount]')?.getAttribute('data-discount')) || 10;
+
+    const paintRange = () => {
+      const p = ((+range.value - +range.min) / (+range.max - +range.min)) * 100;
+      range.style.setProperty('--p', p + '%');
+    };
+
+    function calc() {
+      const area = Math.min(300, Math.max(3, Number(num.value) || 3));
+      const canvasKey = (root!.querySelector<HTMLInputElement>('input[name="canvas"]:checked')?.value || 'matte') as string;
+      const profileKey = (root!.querySelector<HTMLInputElement>('input[name="profile"]:checked')?.value || 'standard') as string;
+      const canvas = P.canvas[canvasKey];
+      const profile = P.profile[profileKey];
+      // периметр: считаем комнаты примерно квадратными
+      const perRoom = area / state.rooms;
+      const perimeter = state.rooms * 4 * Math.sqrt(perRoom);
+
+      const rows: [string, number][] = [
+        [`${canvas.label} полотно, ${area} м²`, area * canvas.perM2],
+      ];
+      if (profile.perM) rows.push([`${profile.label} профиль, ~${Math.round(perimeter)} м`, perimeter * profile.perM]);
+      if (state.spot) rows.push([`Светильники × ${state.spot}`, state.spot * P.spotlight]);
+      if (state.chand) rows.push([`Люстры × ${state.chand}`, state.chand * P.chandelier]);
+      if (state.lines) rows.push([`Световые линии, ${state.lines} м`, state.lines * P.lightLine]);
+      if (state.pipe) rows.push([`Обход труб × ${state.pipe}`, state.pipe * P.pipe]);
+      if (state.rooms > 1) rows.push([`Доп. помещения × ${state.rooms - 1}`, (state.rooms - 1) * P.extraRoom]);
+
+      let total = rows.reduce((s, r) => s + r[1], 0);
+      if (total < P.minOrder) {
+        rows.push(['Минимальный заказ', P.minOrder - total]);
+        total = P.minOrder;
+      }
+      const discounted = total * (1 - DISCOUNT / 100);
+
+      out.total.textContent = fmt(total);
+      out.disc.textContent = fmt(discounted);
+      out.list.innerHTML = rows
+        .map(([l, v]) => `<li class="flex justify-between gap-4"><span class="text-muted">${l}</span><span class="font-medium whitespace-nowrap">${fmt(v)}</span></li>`)
+        .join('');
+
+      const text = [
+        `${area} м², помещений: ${state.rooms}`,
+        `Полотно: ${canvas.label}, профиль: ${profile.label}`,
+        state.spot ? `Светильники: ${state.spot}` : '',
+        state.chand ? `Люстры: ${state.chand}` : '',
+        state.lines ? `Световые линии: ${state.lines} м` : '',
+        state.pipe ? `Трубы: ${state.pipe}` : '',
+        `Итого ≈ ${fmt(total)} (со скидкой ${fmt(discounted)})`,
+      ].filter(Boolean).join('\n');
+      window.__calc = {
+        text,
+        summary: `<div class="flex justify-between gap-3"><span class="text-white/70">Ваш расчёт: ${area} м², ${canvas.label.toLowerCase()}</span><b class="whitespace-nowrap">${fmt(discounted)}</b></div>`,
+      };
+    }
+
+    range.addEventListener('input', () => { num.value = range.value; paintRange(); calc(); });
+    num.addEventListener('input', () => { range.value = String(Math.min(150, Number(num.value) || 3)); paintRange(); calc(); });
+    num.addEventListener('blur', () => { num.value = String(Math.min(300, Math.max(3, Number(num.value) || 3))); calc(); });
+    root.querySelectorAll('input[type="radio"]').forEach((r) => r.addEventListener('change', calc));
+    root.querySelectorAll<HTMLElement>('[data-stepper]').forEach((st) => {
+      const key = st.dataset.stepper!;
+      const min = Number(st.dataset.min), max = Number(st.dataset.max);
+      const val = st.querySelector<HTMLElement>('[data-val]')!;
+      const set = (v: number) => { state[key] = Math.min(max, Math.max(min, v)); val.textContent = String(state[key]); calc(); };
+      st.querySelector('[data-dec]')!.addEventListener('click', () => set(state[key] - 1));
+      st.querySelector('[data-inc]')!.addEventListener('click', () => set(state[key] + 1));
+    });
+    paintRange();
+    calc();
+  }
+</script>

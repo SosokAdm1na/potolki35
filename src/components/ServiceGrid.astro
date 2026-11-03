@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { services } from '../data/services';
+import Icon from './Icon.astro';
+interface Props { exclude?: string; title?: string }
+const { exclude, title = 'Какие потолки делаем' } = Astro.props;
+const list = services.filter((s) => s.slug !== exclude);
+---
+<section class="py-16 sm:py-24">
+  <div class="container-x">
+    <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="eyebrow">Каталог</p>
+        <h2 class="h2 mt-3">{title}</h2>
+      </div>
+      <a href="/potolki/" class="group inline-flex items-center gap-2 font-medium">Все виды <Icon name="arrow" class="size-4 transition group-hover:translate-x-1" /></a>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {list.map((s, i) => (
+        <a href={`/potolki/${s.slug}/`} class:list={['reveal group relative flex flex-col overflow-hidden rounded-3xl bg-surface sm:rounded-4xl', i === 0 && !exclude && 'col-span-2 lg:row-span-2', i === list.length - 1 && !exclude && 'col-span-2']} style={`transition-delay:${(i % 4) * 60}ms`}>
+          <div class:list={['relative overflow-hidden', i === 0 && !exclude ? 'aspect-[4/3] lg:aspect-auto lg:flex-1' : i === list.length - 1 && !exclude ? 'aspect-[4/3] lg:aspect-[8/3]' : 'aspect-[4/3]']}>
+            <Image src={s.photo} alt={s.h1} widths={[480, 800, 1200]} sizes="(min-width:1024px) 50vw, 100vw" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" />
+            <span class="absolute left-2.5 top-2.5 rounded-full bg-paper/90 px-2.5 py-1 text-[11px] font-semibold backdrop-blur sm:left-4 sm:top-4 sm:px-3 sm:text-xs">от {s.priceFrom.toLocaleString('ru-RU')} ₽/{s.unit}</span>
+          </div>
+          <div class="flex items-start justify-between gap-4 p-3.5 sm:p-5">
+            <div>
+              <h3 class="text-[15px] font-medium sm:text-lg">{s.title}</h3>
+              <p class="mt-1 hidden text-sm text-muted sm:block">{s.short}</p>
+            </div>
+            <span class="hidden size-10 shrink-0 place-items-center rounded-full border border-line sm:grid transition group-hover:border-ink group-hover:bg-ink group-hover:text-white">
+              <Icon name="arrow" class="size-4" />
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

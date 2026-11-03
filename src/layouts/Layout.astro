@@ -1,0 +1,63 @@
+---
+import '../styles/global.css';
+import { site } from '../config';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import LeadModal from '../components/LeadModal.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  schema?: Record<string, unknown>;
+}
+const { title, description, image, schema } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.name,
+  telephone: site.phone,
+  url: site.url,
+  areaServed: site.city,
+  address: { '@type': 'PostalAddress', addressLocality: site.city, addressCountry: 'RU' },
+  openingHours: 'Mo-Su 09:00-21:00',
+  priceRange: '₽₽',
+};
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f4f2ee" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={new URL(image, site.url).href} />}
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+    <!-- TODO: счётчик Яндекс Метрики (вставить после регистрации) -->
+  </head>
+  <body class="min-h-dvh">
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <LeadModal />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

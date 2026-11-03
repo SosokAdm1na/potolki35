@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ServiceGrid from '../../components/ServiceGrid.astro';
+import CtaForm from '../../components/CtaForm.astro';
+import { site } from '../../config';
+---
+<Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description="Все виды натяжных потолков: матовые, сатиновые, глянцевые, тканевые, парящие, теневые, световые линии и двухуровневые. Цены с монтажом в Череповце.">
+  <section class="pt-10 sm:pt-16">
+    <div class="container-x max-w-3xl">
+      <p class="eyebrow">Каталог</p>
+      <h1 class="mt-4 text-4xl font-medium sm:text-6xl">Виды натяжных потолков</h1>
+      <p class="mt-5 text-lg text-muted">Цены указаны с материалами и монтажом. Подберём решение под ваш интерьер и бюджет — замер бесплатно.</p>
+    </div>
+  </section>
+  <ServiceGrid exclude="__none__" title="Выберите тип" />
+  <CtaForm source="Каталог потолков" />
+</Layout>

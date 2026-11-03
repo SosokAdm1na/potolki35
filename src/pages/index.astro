@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import Calculator from '../components/Calculator.astro';
+import Works from '../components/Works.astro';
+import Steps from '../components/Steps.astro';
+import Reviews from '../components/Reviews.astro';
+import Faq from '../components/Faq.astro';
+import CtaForm from '../components/CtaForm.astro';
+import { site, prices } from '../config';
+import hero from '../assets/photos/hero-living.jpg';
+---
+<Layout
+  title={`Натяжные потолки в Череповце под ключ — от ${prices.canvas.matte.perM2} ₽/м² | ${site.name}`}
+  description={`Натяжные потолки ${site.cityIn}: матовые, парящие, теневые, световые линии. Бесплатный замер, монтаж за 1 день, скидка ${site.discountPercent}% по заявке с сайта.`}
+>
+  <!-- HERO -->
+  <section class="relative pb-10 pt-8 sm:pt-14">
+    <div class="container-x">
+      <div class="grid gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-end lg:gap-12">
+        <div>
+          <p class="eyebrow mb-5">Натяжные потолки · {site.city}</p>
+          <h1 class="text-[38px] leading-[1.02] font-medium sm:text-6xl lg:text-[76px]">
+            Идеальный потолок <span class="relative inline-block">за&nbsp;1&nbsp;день<span class="light-line absolute inset-x-0 -bottom-1 sm:-bottom-2"></span></span>
+          </h1>
+        </div>
+        <div class="flex flex-col gap-6 lg:pb-3">
+          <p class="text-lg leading-relaxed text-muted">Матовые, парящие, теневые и световые линии. Замер бесплатно, цена фиксируется в договоре, монтаж без пыли и выноса мебели.</p>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <a href="#calc" class="btn-primary !py-4"><Icon name="calc" /> Рассчитать стоимость</a>
+            <button type="button" class="btn-ghost !py-4" data-open-lead data-lead-source="Первый экран">Вызвать замерщика</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative mt-10 overflow-hidden rounded-[2rem] sm:mt-14 sm:rounded-[2.5rem]">
+        <Image src={hero} alt="Гостиная с натяжным потолком и световыми линиями" widths={[640, 1024, 1600, 2000]} sizes="(min-width:1240px) 1200px, 100vw" loading="eager" fetchpriority="high" class="aspect-[4/5] w-full object-cover sm:aspect-[16/9] lg:aspect-[21/9]" />
+        <div class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent"></div>
+        <div class="absolute inset-x-0 top-[14%] overflow-hidden"><div class="light-line animate-sweep mx-auto w-2/3"></div></div>
+
+        <div class="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 sm:inset-x-6 sm:bottom-6 sm:gap-3 lg:left-auto lg:w-[640px]">
+          {site.stats.map((s) => (
+            <div class="rounded-2xl bg-paper/85 p-3 backdrop-blur-xl sm:rounded-3xl sm:p-5">
+              <p class="font-display text-lg font-medium leading-none sm:text-3xl">{s.value}</p>
+              <p class="mt-1.5 text-[11px] leading-tight text-muted sm:text-sm">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="absolute left-6 top-6 hidden items-center gap-3 rounded-full bg-ink/70 py-2 pl-2 pr-5 text-white backdrop-blur-xl sm:flex">
+          <span class="rounded-full bg-glow px-3 py-1 text-sm font-bold text-ink">−{site.discountPercent}%</span>
+          <span class="text-sm">по заявке с сайта до конца месяца</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Преимущества -->
+  <section class="border-y border-line bg-surface">
+    <div class="container-x grid grid-cols-2 gap-px lg:grid-cols-4">
+      {[
+        ['shield', 'Гарантия по договору', 'на полотно и монтаж'],
+        ['ruler', 'Замер за 0 ₽', 'приедем в день обращения'],
+        ['ruble', 'Цена не вырастет', 'смета фиксируется'],
+        ['spark', 'Свой монтаж', 'без субподрядчиков'],
+      ].map(([i, t, d]) => (
+        <div class="flex items-center gap-3 py-6 sm:gap-4 sm:px-4">
+          <span class="grid size-11 shrink-0 place-items-center rounded-2xl bg-paper"><Icon name={i} class="size-5" /></span>
+          <span><b class="block text-sm font-semibold sm:text-base">{t}</b><span class="text-xs text-muted sm:text-sm">{d}</span></span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <ServiceGrid />
+  <Calculator />
+  <Works />
+  <Steps />
+  <Reviews />
+  <Faq />
+  <CtaForm />
+</Layout>

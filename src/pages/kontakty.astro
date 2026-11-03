@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../config';
+---
+<Layout title={`Контакты — натяжные потолки в Череповце | ${site.name}`} description={`Телефон ${site.phone}. ${site.workHours}. Бесплатный замер натяжных потолков по Череповцу и району.`}>
+  <section class="py-10 sm:py-16">
+    <div class="container-x grid gap-8 lg:grid-cols-2">
+      <div>
+        <p class="eyebrow">Контакты</p>
+        <h1 class="mt-4 text-4xl font-medium sm:text-6xl">Свяжитесь с нами</h1>
+        <div class="mt-10 flex flex-col gap-4">
+          <a href={site.phoneHref} class="group flex items-center gap-4 rounded-4xl bg-ink p-6 text-white" data-goal="phone_click">
+            <span class="grid size-12 place-items-center rounded-2xl bg-glow text-ink"><Icon name="phone" /></span>
+            <span><span class="block text-sm text-white/60">Телефон, {site.workHours.toLowerCase()}</span><span class="font-display text-2xl">{site.phone}</span></span>
+          </a>
+          <div class="grid grid-cols-3 gap-3">
+            <a href={site.max} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">MAX</a>
+            <a href={site.telegram} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">Telegram</a>
+            <a href={site.vk} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">ВКонтакте</a>
+          </div>
+          <div class="flex items-center gap-4 rounded-4xl border border-line bg-surface p-6">
+            <span class="grid size-12 place-items-center rounded-2xl bg-paper"><Icon name="pin" /></span>
+            <span>{site.address}</span>
+          </div>
+          <p class="text-sm text-muted">{site.legal}</p>
+        </div>
+      </div>
+      <div class="rounded-[2.5rem] bg-surface p-6 sm:p-10">
+        <h2 class="text-2xl font-medium">Оставить заявку</h2>
+        <p class="mb-6 mt-2 text-muted">Перезвоним и договоримся о бесплатном замере.</p>
+        <LeadForm id="contacts" source="Страница контактов" />
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/unbounded";
+
+@theme {
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  --font-display: "Unbounded Variable", "Manrope Variable", sans-serif;
+
+  --color-paper: #f4f2ee;
+  --color-surface: #ffffff;
+  --color-ink: #0f0f11;
+  --color-ink-2: #1b1b1f;
+  --color-muted: #6c6a66;
+  --color-line: #e4e0d9;
+  --color-glow: #ffb547;
+  --color-glow-2: #ffd9a0;
+  --color-ok: #2f9e6b;
+
+  --radius-4xl: 2rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "ss01";
+  }
+  h1, h2, h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--color-glow-2);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-glow);
+    outline-offset: 3px;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 select-none;
+}
+@utility btn-primary {
+  @apply btn bg-ink text-white hover:bg-ink-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-10px_rgba(15,15,17,.6)];
+}
+@utility btn-glow {
+  @apply btn bg-glow text-ink hover:-translate-y-0.5 hover:shadow-[0_10px_40px_-8px_rgba(255,181,71,.8)];
+}
+@utility btn-ghost {
+  @apply btn border border-ink/15 bg-white/40 text-ink backdrop-blur hover:border-ink/40;
+}
+@utility btn-ghost-dark {
+  @apply btn border border-white/20 text-white hover:border-white/60;
+}
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-muted;
+  &::before {
+    content: "";
+    @apply h-px w-6 bg-current;
+  }
+}
+@utility h2 {
+  @apply font-display text-[28px] leading-[1.1] font-medium sm:text-4xl lg:text-[44px];
+}
+@utility chip {
+  @apply cursor-pointer rounded-full border border-line bg-white px-4 py-2 text-sm font-medium transition hover:border-ink/40;
+}
+@utility field {
+  @apply w-full rounded-2xl border border-line bg-white px-4 py-3.5 text-[16px] outline-none transition placeholder:text-muted/70 focus:border-ink;
+}
+/* «Световая линия» — фирменный декоративный элемент */
+@utility light-line {
+  @apply pointer-events-none h-[3px] rounded-full;
+  background: linear-gradient(90deg, transparent, var(--color-glow-2) 20%, #fff 50%, var(--color-glow-2) 80%, transparent);
+  box-shadow: 0 0 24px 4px rgba(255, 181, 71, 0.55), 0 0 60px 10px rgba(255, 181, 71, 0.25);
+}
+
+.chip-input:checked + .chip {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: #fff;
+}
+.chip-input:focus-visible + .chip {
+  outline: 2px solid var(--color-glow);
+  outline-offset: 2px;
+}
+
+/* Появление блоков при прокрутке */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+@keyframes sweep {
+  0% { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+.animate-sweep { animation: sweep 6s ease-in-out infinite; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-glow) var(--p, 30%), rgba(255, 255, 255, 0.15) var(--p, 30%));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #fff; border: 6px solid var(--color-glow);
+  box-shadow: 0 0 20px rgba(255, 181, 71, 0.7);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; border: 6px solid var(--color-glow);
+  cursor: pointer;
+}

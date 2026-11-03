@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Calculator from '../components/Calculator.astro';
+import CtaForm from '../components/CtaForm.astro';
+import { site, prices } from '../config';
+import { services } from '../data/services';
+const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
+const extras = [
+  ['Точечный светильник с установкой', fmt(prices.spotlight), 'шт'],
+  ['Закладная под люстру', fmt(prices.chandelier), 'шт'],
+  ['Световая линия', fmt(prices.lightLine), 'пог. м'],
+  ['Обход трубы', fmt(prices.pipe), 'шт'],
+  ['Теневой профиль', fmt(prices.profile.shadow.perM), 'пог. м'],
+  ['Парящий профиль с подсветкой', fmt(prices.profile.floating.perM), 'пог. м'],
+];
+---
+<Layout title={`Цены на натяжные потолки в Череповце 2026 — калькулятор | ${site.name}`} description="Цены на натяжные потолки в Череповце с монтажом. Онлайн-калькулятор стоимости, прайс на светильники и профили. Скидка по заявке с сайта.">
+  <section class="pb-12 pt-10 sm:pt-16">
+    <div class="container-x max-w-3xl">
+      <p class="eyebrow">Прайс</p>
+      <h1 class="mt-4 text-4xl font-medium sm:text-6xl">Цены на натяжные потолки</h1>
+      <p class="mt-5 text-lg text-muted">Стоимость с материалами и работой. Точную смету делает замерщик бесплатно и фиксирует её в договоре.</p>
+    </div>
+  </section>
+
+  <Calculator heading={false} />
+
+  <section class="py-16 sm:py-24">
+    <div class="container-x grid gap-6 lg:grid-cols-2">
+      <div class="rounded-4xl border border-line bg-surface p-6 sm:p-8">
+        <h2 class="text-2xl font-medium">Полотна с монтажом</h2>
+        <table class="mt-6 w-full text-left">
+          <tbody class="divide-y divide-line">
+            {services.map((s) => (
+              <tr><td class="py-3.5"><a href={`/potolki/${s.slug}/`} class="hover:underline">{s.title}</a></td><td class="py-3.5 text-right font-semibold whitespace-nowrap">от {fmt(s.priceFrom)}<span class="font-normal text-muted"> / {s.unit}</span></td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="rounded-4xl border border-line bg-surface p-6 sm:p-8">
+        <h2 class="text-2xl font-medium">Свет и дополнительные работы</h2>
+        <table class="mt-6 w-full text-left">
+          <tbody class="divide-y divide-line">
+            {extras.map(([t, p, u]) => (
+              <tr><td class="py-3.5 pr-4">{t}</td><td class="py-3.5 text-right font-semibold whitespace-nowrap">{p}<span class="font-normal text-muted"> / {u}</span></td></tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="mt-6 text-sm text-muted">Минимальная сумма заказа — {fmt(prices.minOrder)}.</p>
+      </div>
+    </div>
+  </section>
+  <CtaForm source="Страница цен" />
+</Layout>

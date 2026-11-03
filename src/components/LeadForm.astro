@@ -1,0 +1,112 @@
+---
+import { site, districts } from '../config';
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string; // уникальный префикс для id полей
+  source?: string; // где на сайте заполнили форму
+  compact?: boolean;
+}
+const { id, source = 'Форма на сайте', compact = false } = Astro.props;
+
+const methods = [
+  { v: 'call', l: 'Звонок' },
+  { v: 'max', l: 'MAX' },
+  { v: 'telegram', l: 'Telegram' },
+  { v: 'email', l: 'Email' },
+];
+const areas = ['до 20 м²', '20–50 м²', '50–100 м²', '100+ м²'];
+const objects = ['Квартира', 'Дом', 'Коммерция'];
+const timing = ['Как можно скорее', 'В течение месяца', 'Пока узнаю цену'];
+---
+<form class="lead-form flex flex-col gap-5" data-lead-form data-source={source} novalidate>
+  <input type="hidden" name="calc" value="" />
+  <!-- ловушка для ботов -->
+  <div class="absolute left-[-9999px]" aria-hidden="true">
+    <label>Сайт<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2">
+    <label class="flex flex-col gap-1.5">
+      <span class="text-sm font-medium">Имя</span>
+      <input class="field" name="name" autocomplete="given-name" placeholder="Как к вам обращаться" maxlength="60" />
+    </label>
+    <label class="flex flex-col gap-1.5">
+      <span class="text-sm font-medium">Телефон <span class="text-glow">*</span></span>
+      <input class="field" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required data-phone />
+    </label>
+  </div>
+
+  <fieldset class="flex flex-col gap-2">
+    <legend class="mb-2 text-sm font-medium">Где удобнее связаться?</legend>
+    <div class="flex flex-wrap gap-2">
+      {methods.map((m, i) => (
+        <label>
+          <input class="chip-input sr-only" type="radio" name="method" value={m.v} checked={i === 0} />
+          <span class="chip">{m.l}</span>
+        </label>
+      ))}
+    </div>
+    <input class="field mt-2 hidden" name="email" type="email" autocomplete="email" placeholder="you@mail.ru" data-email-field />
+  </fieldset>
+
+  <details class="group rounded-2xl border border-dashed border-line bg-white/50 open:bg-white" open={!compact}>
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm font-medium">
+      <span>Детали объекта <span class="font-normal text-muted">— менеджер подготовит расчёт заранее</span></span>
+      <Icon name="plus" class="size-4 shrink-0 transition group-open:rotate-45" />
+    </summary>
+    <div class="flex flex-col gap-4 px-4 pb-4">
+      <div>
+        <p class="mb-2 text-sm text-muted">Примерная площадь</p>
+        <div class="flex flex-wrap gap-2">
+          {areas.map((a) => (
+            <label><input class="chip-input sr-only" type="radio" name="area" value={a} /><span class="chip">{a}</span></label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-muted">Объект</p>
+        <div class="flex flex-wrap gap-2">
+          {objects.map((a) => (
+            <label><input class="chip-input sr-only" type="radio" name="object" value={a} /><span class="chip">{a}</span></label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-muted">Когда планируете</p>
+        <div class="flex flex-wrap gap-2">
+          {timing.map((a) => (
+            <label><input class="chip-input sr-only" type="radio" name="timing" value={a} /><span class="chip">{a}</span></label>
+          ))}
+        </div>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <select class="field" name="district" aria-label="Район">
+          <option value="">Район</option>
+          {districts.map((d) => <option>{d}</option>)}
+        </select>
+        <input class="field" name="address" placeholder="Улица, дом" maxlength="120" />
+      </div>
+      <textarea class="field min-h-20 resize-y" name="comment" placeholder="Комментарий: сколько комнат, светильники, пожелания" maxlength="1000"></textarea>
+    </div>
+  </details>
+
+  <label class="flex items-start gap-3 text-[13px] leading-snug text-muted">
+    <input type="checkbox" name="consent" class="mt-0.5 size-4 shrink-0 accent-ink" required />
+    <span>Даю <a href="/politika/" class="underline hover:text-ink" target="_blank">согласие на обработку персональных данных</a></span>
+  </label>
+
+  <button type="submit" class="btn-primary w-full !py-4 text-base">
+    <span data-submit-label>Получить расчёт со скидкой {site.discountPercent}%</span>
+    <Icon name="arrow" />
+  </button>
+  <p class="-mt-2 text-center text-xs text-muted">Перезвоним в течение 10 минут в рабочее время</p>
+  <p class="hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700" data-form-error role="alert"></p>
+</form>
+
+<div class="hidden flex-col items-center gap-4 py-8 text-center" data-form-success id={`${id}-success`}>
+  <span class="grid size-16 place-items-center rounded-full bg-ok/10 text-ok"><Icon name="check" class="size-8" /></span>
+  <h3 class="text-2xl font-medium">Заявка принята!</h3>
+  <p class="max-w-sm text-muted">Менеджер свяжется с вами в ближайшее время. Скидка {site.discountPercent}% закреплена за вашим номером.</p>
+  <a href={site.phoneHref} class="btn-ghost" data-goal="phone_click"><Icon name="phone" /> Не хотите ждать? {site.phone}</a>
+</div>

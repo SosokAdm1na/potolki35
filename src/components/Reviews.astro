@@ -1,0 +1,36 @@
+---
+import Icon from './Icon.astro';
+// ДЕМО: тексты-примеры для показа дизайна. Перед запуском заменить на реальные отзывы
+// (или виджет отзывов Яндекс Карт). Публиковать выдуманные отзывы нельзя.
+const reviews = [
+  { name: 'Анна', where: 'Кухня и коридор', text: 'Замерщик приехал на следующий день, посчитал всё на месте. Монтаж сделали за один день, мусора не осталось. Цена совпала со сметой.' },
+  { name: 'Дмитрий', where: 'Парящий потолок в зале', text: 'Хотел подсветку по периметру — подобрали тёплый свет и пульт. Вечером смотрится шикарно, гости спрашивают, кто делал.' },
+  { name: 'Елена', where: 'Ванная и туалет', text: 'Быстро и аккуратно, всё объяснили. Через полгода сосед сверху затопил — потолок выдержал, воду слили без следов.' },
+];
+---
+<section class="py-16 sm:py-24">
+  <div class="container-x">
+    <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="eyebrow">Отзывы <span class="ml-2 rounded-full bg-glow/30 px-2 py-0.5 text-[10px] tracking-normal text-ink normal-case">демо-тексты</span></p>
+        <h2 class="h2 mt-3">Что говорят клиенты</h2>
+      </div>
+      <div class="flex items-center gap-3 rounded-full border border-line bg-surface px-4 py-2">
+        <span class="flex text-glow">{[1, 2, 3, 4, 5].map(() => <Icon name="star" class="size-4 fill-current" />)}</span>
+        <span class="text-sm font-medium">Рейтинг на Яндекс Картах</span>
+      </div>
+    </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      {reviews.map((r, i) => (
+        <blockquote class="reveal flex flex-col gap-5 rounded-4xl border border-line bg-surface p-6" style={`transition-delay:${i * 80}ms`}>
+          <span class="flex text-glow">{[1, 2, 3, 4, 5].map(() => <Icon name="star" class="size-4 fill-current" />)}</span>
+          <p class="flex-1 leading-relaxed">«{r.text}»</p>
+          <footer class="flex items-center gap-3">
+            <span class="grid size-10 place-items-center rounded-full bg-paper font-display font-medium">{r.name[0]}</span>
+            <span><b class="block font-semibold">{r.name}</b><span class="text-sm text-muted">{r.where}</span></span>
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+  </div>
+</section>
