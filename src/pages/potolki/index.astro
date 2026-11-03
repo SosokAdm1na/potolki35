@@ -5,13 +5,13 @@ import CtaForm from '../../components/CtaForm.astro';
 import { site } from '../../config';
 ---
 <Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description="Все виды натяжных потолков: матовые, сатиновые, глянцевые, тканевые, парящие, теневые, световые линии и двухуровневые. Цены с монтажом в Череповце.">
-  <section class="pt-10 sm:pt-16">
-    <div class="container-x max-w-3xl">
+  <section class="pb-8 pt-10 sm:pb-12 sm:pt-16">
+    <div class="container-x">
       <p class="eyebrow">Каталог</p>
-      <h1 class="mt-4 text-4xl font-medium sm:text-6xl">Виды натяжных потолков</h1>
-      <p class="mt-5 text-lg text-muted">Цены указаны с материалами и монтажом. Подберём решение под ваш интерьер и бюджет — замер бесплатно.</p>
+      <h1 class="mt-4 max-w-3xl text-4xl font-medium sm:text-[56px] sm:leading-[1.08]">Виды натяжных потолков</h1>
+      <p class="mt-5 max-w-2xl text-lg text-muted">Цены указаны с материалами и монтажом. Замер бесплатно.</p>
     </div>
   </section>
-  <ServiceGrid exclude="__none__" title="Выберите тип" />
+  <ServiceGrid exclude="__none__" bare />
   <CtaForm source="Каталог потолков" />
 </Layout>

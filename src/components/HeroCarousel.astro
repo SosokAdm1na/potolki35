@@ -1,0 +1,127 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { site } from '../config';
+import video from '../assets/hero/hero.mp4?url';
+import poster from '../assets/hero/hero-poster.jpg';
+import kitchen from '../assets/hero/kitchen.jpg';
+import stone from '../assets/hero/stone.jpg';
+import corridor from '../assets/hero/corridor.jpg';
+import frame from '../assets/hero/frame.jpg';
+import win from '../assets/hero/window.jpg';
+import track from '../assets/hero/track.jpg';
+import line from '../assets/hero/line.jpg';
+import magnetic from '../assets/hero/magnetic.jpg';
+
+const photos = [
+  { src: corridor, alt: 'Коридор: световой контур и точечные светильники' },
+  { src: kitchen, alt: 'Кухня-гостиная с трековым светом' },
+  { src: stone, alt: 'Подсветка потолка над каменной стеной' },
+  { src: frame, alt: 'Световая рамка в потолке' },
+  { src: win, alt: 'Подсветка по периметру и скрытый карниз' },
+  { src: track, alt: 'Трековые светильники над кухней' },
+  { src: line, alt: 'Световые линии и подсветка по контуру' },
+  { src: magnetic, alt: 'Световая линия с магнитным треком' },
+];
+const slide = 'relative aspect-[3/4] w-[78vw] shrink-0 snap-start overflow-hidden rounded-3xl bg-ink sm:w-[42vw] sm:rounded-4xl lg:w-[340px] xl:w-[360px]';
+---
+<div data-carousel aria-roledescription="карусель" aria-label="Примеры потолков">
+  <div class="hero-track relative flex snap-x snap-mandatory gap-3 overflow-x-auto sm:gap-4" data-track tabindex="0">
+    <div class={slide} data-slide>
+      <video class="size-full object-cover" src={video} poster={poster.src} muted loop playsinline preload="metadata" disablepictureinpicture aria-label="Видео: готовые потолки со световыми линиями" data-video></video>
+    </div>
+    {photos.map((p) => (
+      <div class={slide} data-slide>
+        <Image src={p.src} alt={p.alt} widths={[480, 720]} sizes="(min-width:1024px) 360px, (min-width:640px) 42vw, 78vw" class="size-full object-cover" />
+      </div>
+    ))}
+  </div>
+
+  <div class="container-x mt-5 flex items-center gap-4 sm:mt-6 sm:gap-6">
+    <p class="flex shrink-0 items-center gap-2 text-sm">
+      <span class="rounded-full bg-glow px-2.5 py-0.5 font-bold">−{site.discountPercent}%</span>
+      <span class="text-muted">по заявке с сайта</span>
+    </p>
+    <div class="relative h-px flex-1 bg-line" aria-hidden="true">
+      <div class="hero-progress absolute inset-y-0 left-0" data-progress></div>
+    </div>
+    <div class="hidden shrink-0 gap-2 sm:flex">
+      <button type="button" class="grid size-11 place-items-center rounded-full border border-ink/15 transition hover:border-ink disabled:opacity-30 disabled:hover:border-ink/15" aria-label="Назад" data-prev><Icon name="arrow" class="size-4 rotate-180" /></button>
+      <button type="button" class="grid size-11 place-items-center rounded-full border border-ink/15 transition hover:border-ink disabled:opacity-30 disabled:hover:border-ink/15" aria-label="Вперёд" data-next><Icon name="arrow" class="size-4" /></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  const track = root?.querySelector<HTMLElement>('[data-track]');
+  if (root && track) {
+    const slides = [...track.querySelectorAll<HTMLElement>('[data-slide]')];
+    const video = track.querySelector<HTMLVideoElement>('[data-video]');
+    const progress = root.querySelector<HTMLElement>('[data-progress]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+
+    const maxScroll = () => track.scrollWidth - track.clientWidth;
+    const start = () => parseFloat(getComputedStyle(track).paddingLeft) || 0;
+    const index = () => {
+      const x = track.scrollLeft + start();
+      return slides.reduce((best, s, i) => (Math.abs(s.offsetLeft - x) < Math.abs(slides[best].offsetLeft - x) ? i : best), 0);
+    };
+    const go = (i: number) =>
+      track.scrollTo({ left: slides[Math.max(0, Math.min(slides.length - 1, i))].offsetLeft - start(), behavior: calm ? 'auto' : 'smooth' });
+
+    const paint = () => {
+      const max = maxScroll();
+      const share = track.clientWidth / track.scrollWidth;
+      if (progress) progress.style.width = `${(share + (1 - share) * (max ? track.scrollLeft / max : 0)) * 100}%`;
+      if (prev) prev.disabled = track.scrollLeft < 4;
+      if (next) next.disabled = track.scrollLeft > max - 4;
+    };
+    track.addEventListener('scroll', paint, { passive: true });
+    window.addEventListener('resize', paint);
+    paint();
+
+    // Автопрокрутка: на видео задерживаемся дольше, после действий посетителя выключаем совсем.
+    let timer = 0;
+    let stopped = calm;
+    let hovering = false;
+    let visible = true;
+    const schedule = () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(tick, index() === 0 ? 9000 : 4000);
+    };
+    const tick = () => {
+      if (stopped) return;
+      if (!hovering && visible && !document.hidden) {
+        if (track.scrollLeft > maxScroll() - 4) go(0);
+        else go(index() + 1);
+      }
+      schedule();
+    };
+    const stop = () => {
+      stopped = true;
+      clearTimeout(timer);
+    };
+    ['pointerdown', 'wheel', 'touchstart', 'keydown'].forEach((e) => track.addEventListener(e, stop, { passive: true }));
+    root.addEventListener('mouseenter', () => (hovering = true));
+    root.addEventListener('mouseleave', () => (hovering = false));
+    prev?.addEventListener('click', () => { stop(); go(index() - 1); });
+    next?.addEventListener('click', () => { stop(); go(index() + 1); });
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting), { threshold: 0.3 }).observe(track);
+    if (!stopped) schedule();
+
+    // Видео играет, только пока его видно.
+    if (video && !calm && !saveData) {
+      new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) video.play().catch(() => {});
+          else video.pause();
+        },
+        { threshold: 0.4 },
+      ).observe(video);
+    }
+  }
+</script>

@@ -1,29 +1,30 @@
 ---
-import Icon from './Icon.astro';
 const steps = [
-  { icon: 'phone', t: 'Заявка', d: 'Оставляете телефон — перезваниваем за 10 минут и договариваемся о замере.' },
-  { icon: 'ruler', t: 'Бесплатный замер', d: 'Замерщик приезжает с образцами, считает смету на месте. Цена фиксируется в договоре.' },
-  { icon: 'clock', t: 'Монтаж за 1 день', d: 'Бригада приезжает в удобное время. Мебель не выносим — укрываем плёнкой.' },
-  { icon: 'broom', t: 'Чисто после себя', d: 'Убираем мусор, проверяем свет и подписываем акт. Оплата — после приёмки.' },
+  { t: 'Заявка', d: 'Оставляете телефон. Менеджер перезванивает и договаривается о замере.' },
+  { t: 'Замер', d: 'Замерщик приезжает, показывает образцы и считает смету. Это бесплатно.' },
+  { t: 'Монтаж', d: 'Бригада приезжает в согласованное время. Обычная квартира занимает один день.' },
+  { t: 'Сдача', d: 'Убираем за собой и проверяем свет. Вы принимаете работу.' },
 ];
 ---
-<section class="py-16 sm:py-24">
+<section class="sec">
   <div class="container-x">
-    <div class="mb-12 max-w-2xl">
+    <div class="sec-head">
       <p class="eyebrow">Как работаем</p>
-      <h2 class="h2 mt-3">От звонка до готового потолка — 4 шага</h2>
+      <h2 class="h2 mt-3">Как всё проходит</h2>
     </div>
-    <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {steps.map((s, i) => (
-        <li class="reveal relative flex flex-col gap-4 rounded-4xl border border-line bg-surface p-6" style={`transition-delay:${i * 80}ms`}>
-          <div class="flex items-center justify-between">
-            <span class="grid size-12 place-items-center rounded-2xl bg-paper"><Icon name={s.icon} class="size-6" /></span>
-            <span class="font-display text-5xl font-medium text-line">0{i + 1}</span>
-          </div>
-          <h3 class="text-lg font-medium">{s.t}</h3>
-          <p class="text-sm leading-relaxed text-muted">{s.d}</p>
-        </li>
-      ))}
-    </ol>
+    <div class="relative">
+      <div class="absolute bottom-2 left-[3px] top-2 w-px bg-glow/50 shadow-[0_0_8px_rgba(255,181,71,.6)] lg:hidden" aria-hidden="true"></div>
+      <div class="light-rule line-draw absolute inset-x-0 top-[3px] hidden origin-left lg:block" aria-hidden="true"></div>
+      <ol class="grid gap-8 lg:grid-cols-4">
+        {steps.map((s, i) => (
+          <li class="reveal relative pl-8 lg:pl-0 lg:pt-9" style={`transition-delay:${i * 90}ms`}>
+            <span class="absolute left-0 top-1.5 size-[7px] rounded-full bg-glow shadow-[0_0_10px_2px_rgba(255,181,71,.7)] lg:top-0" aria-hidden="true"></span>
+            <p class="text-sm font-medium text-muted">Шаг {i + 1}</p>
+            <h3 class="mt-1 text-xl font-medium">{s.t}</h3>
+            <p class="mt-2 max-w-sm leading-relaxed text-muted">{s.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
 </section>

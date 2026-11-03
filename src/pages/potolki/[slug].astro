@@ -15,7 +15,7 @@ export function getStaticPaths() {
 const { s } = Astro.props as { s: Service };
 ---
 <Layout title={`${s.seoTitle} | ${site.name}`} description={s.seoDescription}>
-  <section class="pb-12 pt-6 sm:pt-10">
+  <section class="pb-8 pt-6 sm:pb-12 sm:pt-10">
     <div class="container-x">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted" aria-label="Хлебные крошки">
         <a href="/" class="hover:text-ink">Главная</a><span>/</span><a href="/potolki/" class="hover:text-ink">Потолки</a><span>/</span><span class="text-ink">{s.title}</span>
@@ -36,26 +36,26 @@ const { s } = Astro.props as { s: Service };
         </div>
         <div class="relative overflow-hidden rounded-[2rem]">
           <Image src={s.photo} alt={s.h1} widths={[640, 1000, 1400]} sizes="(min-width:1024px) 50vw, 100vw" loading="eager" class="aspect-[4/3] w-full object-cover" />
-          <span class="absolute left-4 top-4 rounded-full bg-glow px-3 py-1 text-sm font-bold">−{site.discountPercent}% с сайта</span>
+          <span class="absolute left-4 top-4 rounded-full bg-glow px-3 py-1 text-sm font-bold">−{site.discountPercent}% по заявке с сайта</span>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-12">
+  <section class="pb-16 sm:pb-[5.5rem]">
     <div class="container-x grid gap-4 md:grid-cols-2">
       <div class="rounded-4xl border border-line bg-surface p-6 sm:p-8">
-        <h2 class="text-xl font-medium">Преимущества</h2>
+        <h2 class="text-xl font-medium">Особенности</h2>
         <ul class="mt-5 flex flex-col gap-3">
           {s.features.map((f) => <li class="flex items-start gap-3"><span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-glow/30"><Icon name="check" class="size-3.5" /></span>{f}</li>)}
         </ul>
       </div>
       <div class="rounded-4xl border border-line bg-surface p-6 sm:p-8">
-        <h2 class="text-xl font-medium">Где подходит лучше всего</h2>
+        <h2 class="text-xl font-medium">Где подходит</h2>
         <div class="mt-5 flex flex-wrap gap-2">
           {s.goodFor.map((g) => <span class="rounded-full bg-paper px-4 py-2 text-sm font-medium">{g}</span>)}
         </div>
-        <p class="mt-6 text-sm leading-relaxed text-muted">Не уверены, что выбрать? Замерщик привезёт образцы полотен и покажет, как они смотрятся при вашем освещении.</p>
+        <p class="mt-6 text-sm leading-relaxed text-muted">Не знаете, что выбрать? Замерщик покажет образцы на месте.</p>
       </div>
     </div>
   </section>

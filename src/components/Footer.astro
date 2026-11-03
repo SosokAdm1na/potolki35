@@ -4,12 +4,13 @@ import { services } from '../data/services';
 import Logo from './Logo.astro';
 const year = new Date().getFullYear();
 ---
-<footer class="bg-ink pb-28 pt-16 text-white md:pb-10">
+<footer class="relative bg-ink pb-28 pt-16 text-white md:pb-10">
+  <div class="light-line line-draw absolute inset-x-0 top-0"></div>
   <div class="container-x">
     <div class="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.3fr_1fr_1fr]">
       <div class="flex flex-col gap-4">
         <Logo dark />
-        <p class="max-w-sm text-sm text-white/60">Натяжные потолки под ключ {site.cityIn} и районе. Бесплатный замер, монтаж за 1 день, гарантия.</p>
+        <p class="max-w-sm text-sm text-white/60">Натяжные потолки {site.cityIn} и районе. Бесплатный замер, монтаж за 1 день.</p>
         <a href={site.phoneHref} class="font-display text-2xl font-medium hover:text-glow" data-goal="phone_click">{site.phone}</a>
         <p class="text-sm text-white/60">{site.workHours}</p>
         <div class="flex gap-2">

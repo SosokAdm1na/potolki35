@@ -178,6 +178,6 @@ const io = new IntersectionObserver(
     }),
   { rootMargin: '0px 0px -10% 0px' },
 );
-document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+document.querySelectorAll('.reveal, .line-draw').forEach((el) => io.observe(el));
 
 captureSource();

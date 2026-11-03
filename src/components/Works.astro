@@ -2,19 +2,21 @@
 import { Image } from 'astro:assets';
 import { works } from '../data/works';
 import Icon from './Icon.astro';
-interface Props { limit?: number; showLink?: boolean }
-const { limit = 6, showLink = true } = Astro.props;
+interface Props { limit?: number; bare?: boolean }
+const { limit = 6, bare = false } = Astro.props;
 const list = works.slice(0, limit);
 ---
-<section class="py-16 sm:py-24">
+<section class:list={['sec', bare && '!pt-0']}>
   <div class="container-x">
-    <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p class="eyebrow">Портфолио <span class="ml-2 rounded-full bg-glow/30 px-2 py-0.5 text-[10px] tracking-normal text-ink normal-case">фото-заглушки</span></p>
-        <h2 class="h2 mt-3">Наши работы в Череповце</h2>
+    {!bare && (
+      <div class="sec-head flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="eyebrow">Портфолио <span class="ml-2 rounded-full bg-glow/30 px-2 py-0.5 text-[10px] tracking-normal text-ink normal-case">фото-заглушки</span></p>
+          <h2 class="h2 mt-3">Наши работы</h2>
+        </div>
+        <a href="/raboty/" class="group inline-flex items-center gap-2 font-medium">Смотреть все <Icon name="arrow" class="size-4 transition group-hover:translate-x-1" /></a>
       </div>
-      {showLink && <a href="/raboty/" class="group inline-flex items-center gap-2 font-medium">Смотреть все <Icon name="arrow" class="size-4 transition group-hover:translate-x-1" /></a>}
-    </div>
+    )}
 
     <div class="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
       {list.map((w, i) => (
@@ -22,9 +24,7 @@ const list = works.slice(0, limit);
           <Image src={w.photo} alt={w.title} widths={[480, 800]} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 82vw" class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105" />
           <figcaption class="absolute inset-x-3 bottom-3 rounded-3xl bg-ink/70 p-4 text-white backdrop-blur-md">
             <p class="font-medium">{w.title}</p>
-            <p class="mt-1 flex flex-wrap gap-x-3 text-xs text-white/70">
-              <span>{w.place}</span><span>{w.area} м²</span><span>{w.type}</span><span>{w.days} {w.days === 1 ? 'день' : 'дня'}</span>
-            </p>
+            <p class="mt-1 text-xs text-white/70">{w.type}</p>
           </figcaption>
         </figure>
       ))}

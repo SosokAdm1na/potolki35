@@ -8,23 +8,20 @@ import coffered from '../assets/photos/coffered.jpg';
 import heroLiving from '../assets/photos/hero-living.jpg';
 import bedroomTrack from '../assets/photos/bedroom-track.jpg';
 
-// ДЕМО: фото-заглушки из Unsplash. Заменить на реальные объекты заказчика.
+// ДЕМО: фото-заглушки из Unsplash. Заменить на реальные объекты заказчика, добавить район, площадь и срок.
 export interface Work {
   photo: ImageMetadata;
   title: string;
-  place: string;
-  area: number;
   type: string;
-  days: number;
 }
 
 export const works: Work[] = [
-  { photo: heroLiving, title: 'Гостиная со световыми линиями', place: 'ул. Ленина', area: 32, type: 'Матовый + линии', days: 1 },
-  { photo: kitchenDark, title: 'Кухня с подсветкой', place: 'Зашекснинский р-н', area: 14, type: 'Сатин', days: 1 },
-  { photo: bedroomWarm, title: 'Спальня, теневой профиль', place: 'Северный р-н', area: 16, type: 'Теневой', days: 1 },
-  { photo: bathroomWood, title: 'Ванная комната', place: 'Индустриальный р-н', area: 6, type: 'Глянец', days: 1 },
-  { photo: livingRecess, title: 'Двухуровневый в гостиной', place: 'Заягорбский р-н', area: 41, type: 'Двухуровневый', days: 2 },
-  { photo: bedroomTrack, title: 'Спальня с треками', place: 'ул. Металлургов', area: 18, type: 'Теневой + трек', days: 1 },
-  { photo: bathroomStone, title: 'Санузел', place: 'пр. Победы', area: 5, type: 'Матовый', days: 1 },
-  { photo: coffered, title: 'Кессонный потолок', place: 'Частный дом', area: 28, type: 'Многоуровневый', days: 3 },
+  { photo: heroLiving, title: 'Гостиная со световыми линиями', type: 'Матовый + линии' },
+  { photo: kitchenDark, title: 'Кухня с подсветкой', type: 'Сатин' },
+  { photo: bedroomWarm, title: 'Спальня, теневой профиль', type: 'Теневой' },
+  { photo: bathroomWood, title: 'Ванная комната', type: 'Глянец' },
+  { photo: livingRecess, title: 'Двухуровневый в гостиной', type: 'Двухуровневый' },
+  { photo: bedroomTrack, title: 'Спальня с треками', type: 'Теневой + трек' },
+  { photo: bathroomStone, title: 'Санузел', type: 'Матовый' },
+  { photo: coffered, title: 'Кессонный потолок', type: 'Многоуровневый' },
 ];

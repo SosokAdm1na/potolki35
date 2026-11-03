@@ -63,7 +63,9 @@
   @apply inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-muted;
   &::before {
     content: "";
-    @apply h-px w-6 bg-current;
+    @apply h-px w-6;
+    background: linear-gradient(90deg, transparent, var(--color-glow));
+    box-shadow: 0 0 8px rgba(255, 181, 71, 0.6);
   }
 }
 @utility h2 {
@@ -75,11 +77,28 @@
 @utility field {
   @apply w-full rounded-2xl border border-line bg-white px-4 py-3.5 text-[16px] outline-none transition placeholder:text-muted/70 focus:border-ink;
 }
-/* «Световая линия» — фирменный декоративный элемент */
+@utility sec-head {
+  @apply mb-8 sm:mb-12;
+}
+/* Световая линия: фирменная тонкая полоса. light-line — для тёмного фона, light-rule — для светлого */
 @utility light-line {
-  @apply pointer-events-none h-[3px] rounded-full;
-  background: linear-gradient(90deg, transparent, var(--color-glow-2) 20%, #fff 50%, var(--color-glow-2) 80%, transparent);
-  box-shadow: 0 0 24px 4px rgba(255, 181, 71, 0.55), 0 0 60px 10px rgba(255, 181, 71, 0.25);
+  @apply pointer-events-none h-px;
+  background: linear-gradient(90deg, transparent, var(--color-glow) 25%, var(--color-glow-2) 50%, var(--color-glow) 75%, transparent);
+  box-shadow: 0 0 14px 1px rgba(255, 181, 71, 0.4);
+}
+@utility light-rule {
+  @apply pointer-events-none h-px;
+  background: linear-gradient(90deg, transparent, var(--color-glow) 30%, var(--color-glow) 70%, transparent);
+  box-shadow: 0 0 10px rgba(255, 181, 71, 0.45);
+}
+
+/* Вертикальный ритм: соседние светлые блоки не складывают отступы */
+@layer components {
+  .sec { padding-block: 4rem; }
+  @media (min-width: 640px) {
+    .sec { padding-block: 5.5rem; }
+  }
+  .sec + .sec { padding-top: 0; }
 }
 
 .chip-input:checked + .chip {
@@ -104,16 +123,52 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+  .line-draw { transform: none; transition: none; }
   html { scroll-behavior: auto; }
 }
 
-@keyframes sweep {
-  0% { transform: translateX(-100%); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateX(100%); opacity: 0; }
+/* Линия «зажигается», когда блок появился на экране */
+.line-draw {
+  transform: scaleX(0);
+  transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.animate-sweep { animation: sweep 6s ease-in-out infinite; }
+.line-draw.is-visible { transform: none; }
+
+/* Карточка: при наведении снизу загорается линия */
+.card-line::after {
+  content: "";
+  position: absolute;
+  inset-inline: 12%;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-glow), transparent);
+  box-shadow: 0 0 12px rgba(255, 181, 71, 0.7);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+.card-line:hover::after,
+.card-line:focus-visible::after {
+  opacity: 1;
+  transform: none;
+}
+
+/* Лента первого экрана: левый край совпадает с контейнером, справа уходит за экран */
+.hero-track {
+  --gutter: 1rem;
+  --edge: max(var(--gutter), calc((100% - 1240px) / 2 + var(--gutter)));
+  padding-inline: var(--edge);
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
+}
+.hero-track::-webkit-scrollbar { display: none; }
+@media (min-width: 640px) { .hero-track { --gutter: 1.5rem; } }
+@media (min-width: 1024px) { .hero-track { --gutter: 2rem; } }
+.hero-progress {
+  background: var(--color-glow);
+  box-shadow: 0 0 10px 1px rgba(255, 181, 71, 0.65);
+  transition: width 0.2s linear;
+}
 
 input[type="range"] {
   -webkit-appearance: none;

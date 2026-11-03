@@ -52,7 +52,7 @@ const timing = ['Как можно скорее', 'В течение месяц�
 
   <details class="group rounded-2xl border border-dashed border-line bg-white/50 open:bg-white" open={!compact}>
     <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-sm font-medium">
-      <span>Детали объекта <span class="font-normal text-muted">— менеджер подготовит расчёт заранее</span></span>
+      <span>Детали объекта <span class="font-normal text-muted">— необязательно</span></span>
       <Icon name="plus" class="size-4 shrink-0 transition group-open:rotate-45" />
     </summary>
     <div class="flex flex-col gap-4 px-4 pb-4">
@@ -97,16 +97,16 @@ const timing = ['Как можно скорее', 'В течение месяц�
   </label>
 
   <button type="submit" class="btn-primary w-full !py-4 text-base">
-    <span data-submit-label>Получить расчёт со скидкой {site.discountPercent}%</span>
+    <span data-submit-label>Заказать замер со скидкой {site.discountPercent}%</span>
     <Icon name="arrow" />
   </button>
-  <p class="-mt-2 text-center text-xs text-muted">Перезвоним в течение 10 минут в рабочее время</p>
+  <p class="-mt-2 text-center text-xs text-muted">Перезвоним в рабочее время</p>
   <p class="hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700" data-form-error role="alert"></p>
 </form>
 
 <div class="hidden flex-col items-center gap-4 py-8 text-center" data-form-success id={`${id}-success`}>
   <span class="grid size-16 place-items-center rounded-full bg-ok/10 text-ok"><Icon name="check" class="size-8" /></span>
-  <h3 class="text-2xl font-medium">Заявка принята!</h3>
-  <p class="max-w-sm text-muted">Менеджер свяжется с вами в ближайшее время. Скидка {site.discountPercent}% закреплена за вашим номером.</p>
-  <a href={site.phoneHref} class="btn-ghost" data-goal="phone_click"><Icon name="phone" /> Не хотите ждать? {site.phone}</a>
+  <h3 class="text-2xl font-medium">Заявка принята</h3>
+  <p class="max-w-sm text-muted">Менеджер свяжется с вами в рабочее время.</p>
+  <a href={site.phoneHref} class="btn-ghost" data-goal="phone_click"><Icon name="phone" /> {site.phone}</a>
 </div>
