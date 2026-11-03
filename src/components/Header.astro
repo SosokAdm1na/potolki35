@@ -9,7 +9,8 @@ const nav = [
   { href: '/raboty/', label: 'Наши работы' },
   { href: '/kontakty/', label: 'Контакты' },
 ];
-const path = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.replace(base, '') || '/';
 ---
 <header class="sticky top-0 z-40 border-b border-transparent bg-paper/80 backdrop-blur-xl transition-colors" data-header>
   <div class="container-x flex h-16 items-center justify-between gap-4 lg:h-20">

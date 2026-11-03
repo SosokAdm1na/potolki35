@@ -124,6 +124,19 @@ document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form
       return showError('Укажите email, чтобы мы могли написать.');
     if (!fd.get('consent')) return showError('Нужно согласие на обработку данных.');
 
+    // Демо на статическом хостинге: сервера нет, заявка никуда не уходит — честно об этом говорим.
+    if (import.meta.env.PUBLIC_STATIC_DEMO === '1') {
+      form.classList.add('hidden');
+      const box = form.nextElementSibling as HTMLElement | null;
+      const title = box?.querySelector('h3');
+      const text = box?.querySelector('p');
+      if (title) title.textContent = 'Это демо-версия';
+      if (text) text.textContent = 'Заявка не отправлена. На рабочем сайте она сразу придёт менеджеру в Telegram или MAX.';
+      box?.classList.remove('hidden');
+      box?.classList.add('flex');
+      return;
+    }
+
     const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
     payload.source = form.closest('dialog') ? currentSource : form.dataset.source;
     payload.page = location.pathname;

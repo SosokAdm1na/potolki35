@@ -7,6 +7,7 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://xn--35-vlcherag2a.xn--p1ai',
+  base: process.env.DEPLOY_BASE || '/',
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   vite: {
