@@ -84,7 +84,7 @@ async function sendMax(text: string) {
   const token = env('MAX_BOT_TOKEN');
   const chat = env('MAX_CHAT_ID');
   if (!token || !chat) return 'skipped';
-  const base = env('MAX_API_URL') || 'https://platform-api2.max.ru';
+  const base = env('MAX_API_URL') || 'https://platform-api.max.ru';
   const res = await fetch(`${base}/messages?chat_id=${encodeURIComponent(chat)}&disable_link_preview=true`, {
     method: 'POST',
     headers: { Authorization: token, 'Content-Type': 'application/json' },
