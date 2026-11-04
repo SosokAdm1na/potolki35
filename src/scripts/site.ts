@@ -146,7 +146,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form
     if (btn) btn.disabled = true;
     btn?.classList.add('opacity-60');
     try {
-      const res = await fetch('/api/lead', {
+      const res = await fetch('/api/lead/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
