@@ -14,6 +14,7 @@
   --color-line: #e4e0d9;
   --color-glow: #ffb547;
   --color-glow-2: #ffd9a0;
+  --color-glow-deep: #d0810f;
   --color-ok: #2f9e6b;
 
   --radius-4xl: 2rem;
@@ -31,6 +32,12 @@
   h1, h2, h3 {
     @apply font-display tracking-tight;
     text-wrap: balance;
+  }
+  [id] {
+    scroll-margin-top: 4.5rem;
+  }
+  summary::-webkit-details-marker {
+    display: none;
   }
   ::selection {
     background: var(--color-glow-2);
@@ -72,7 +79,7 @@
   @apply font-display text-[28px] leading-[1.1] font-medium sm:text-4xl lg:text-[44px];
 }
 @utility chip {
-  @apply cursor-pointer rounded-full border border-line bg-white px-4 py-2 text-sm font-medium transition hover:border-ink/40;
+  @apply inline-flex min-h-10 w-full cursor-pointer items-center justify-center rounded-full border border-line bg-white px-3.5 py-2 text-sm font-medium whitespace-nowrap transition hover:border-ink/40;
 }
 @utility field {
   @apply w-full rounded-2xl border border-line bg-white px-4 py-3.5 text-[16px] outline-none transition placeholder:text-muted/70 focus:border-ink;
@@ -99,6 +106,15 @@
     .sec { padding-block: 5.5rem; }
   }
   .sec + .sec { padding-top: 0; }
+}
+
+select.field {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236c6a66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.1rem;
 }
 
 .chip-input:checked + .chip {

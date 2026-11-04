@@ -16,12 +16,12 @@ export interface Work {
 }
 
 export const works: Work[] = [
-  { photo: heroLiving, title: 'Гостиная со световыми линиями', type: 'Матовый + линии' },
-  { photo: kitchenDark, title: 'Кухня с подсветкой', type: 'Сатин' },
-  { photo: bedroomWarm, title: 'Спальня, теневой профиль', type: 'Теневой' },
-  { photo: bathroomWood, title: 'Ванная комната', type: 'Глянец' },
-  { photo: livingRecess, title: 'Двухуровневый в гостиной', type: 'Двухуровневый' },
-  { photo: bedroomTrack, title: 'Спальня с треками', type: 'Теневой + трек' },
+  { photo: heroLiving, title: 'Гостиная', type: 'Матовый, световые линии' },
+  { photo: kitchenDark, title: 'Кухня', type: 'Сатиновый с подсветкой' },
+  { photo: bedroomWarm, title: 'Спальня', type: 'Теневой профиль' },
+  { photo: bathroomWood, title: 'Ванная', type: 'Глянцевый' },
+  { photo: livingRecess, title: 'Гостиная', type: 'Двухуровневый' },
+  { photo: bedroomTrack, title: 'Спальня', type: 'Теневой профиль, треки' },
   { photo: bathroomStone, title: 'Санузел', type: 'Матовый' },
   { photo: coffered, title: 'Кессонный потолок', type: 'Многоуровневый' },
 ];

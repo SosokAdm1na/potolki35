@@ -14,7 +14,7 @@ const path = Astro.url.pathname.replace(base, '') || '/';
 ---
 <header class="sticky top-0 z-40 border-b border-transparent bg-paper/80 backdrop-blur-xl transition-colors" data-header>
   <div class="container-x flex h-16 items-center justify-between gap-4 lg:h-20">
-    <a href="/" class="shrink-0" aria-label={`${site.name} — на главную`}><Logo /></a>
+    <a href="/" class="flex shrink-0" aria-label={`${site.name} — на главную`}><Logo /></a>
 
     <nav class="hidden items-center gap-1 lg:flex" aria-label="Основное меню">
       {nav.map((n) => (
@@ -39,8 +39,9 @@ const path = Astro.url.pathname.replace(base, '') || '/';
       <a href={site.phoneHref} class="grid size-11 place-items-center rounded-full bg-ink text-white sm:hidden" aria-label="Позвонить" data-goal="phone_click">
         <Icon name="phone" />
       </a>
-      <button type="button" class="grid size-11 place-items-center rounded-full border border-ink/15 lg:hidden" aria-label="Меню" data-menu-toggle>
-        <Icon name="menu" />
+      <button type="button" class="grid size-11 place-items-center rounded-full border border-ink/15 lg:hidden" aria-label="Меню" aria-expanded="false" data-menu-toggle>
+        <span data-menu-open><Icon name="menu" /></span>
+        <span class="hidden" data-menu-close><Icon name="close" /></span>
       </button>
     </div>
   </div>
@@ -59,7 +60,11 @@ const path = Astro.url.pathname.replace(base, '') || '/';
   const onScroll = () => header?.classList.toggle('!border-line', window.scrollY > 8);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-  document.querySelector('[data-menu-toggle]')?.addEventListener('click', () => {
-    document.querySelector('[data-menu]')?.classList.toggle('hidden');
+  const toggle = document.querySelector('[data-menu-toggle]');
+  toggle?.addEventListener('click', () => {
+    const closed = document.querySelector('[data-menu]')?.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!closed));
+    toggle.querySelector('[data-menu-open]')?.classList.toggle('hidden', !closed);
+    toggle.querySelector('[data-menu-close]')?.classList.toggle('hidden', !!closed);
   });
 </script>

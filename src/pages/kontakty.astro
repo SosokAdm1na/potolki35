@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import LeadForm from '../components/LeadForm.astro';
+import Socials from '../components/Socials.astro';
 import { site } from '../config';
 ---
 <Layout title={`Контакты — натяжные потолки в Череповце | ${site.name}`} description={`Телефон ${site.phone}. ${site.workHours}. Бесплатный замер натяжных потолков по Череповцу и району.`}>
   <section class="py-10 sm:py-16">
     <div class="container-x grid gap-8 lg:grid-cols-2 lg:gap-12">
-      <div>
+      <div class="lg:sticky lg:top-28 lg:self-start">
         <p class="eyebrow">Контакты</p>
         <h1 class="mt-4 text-4xl font-medium sm:text-[56px] sm:leading-[1.08]">Свяжитесь с нами</h1>
         <div class="mt-10 flex flex-col gap-4">
@@ -15,11 +16,7 @@ import { site } from '../config';
             <span class="grid size-12 place-items-center rounded-2xl bg-glow text-ink"><Icon name="phone" /></span>
             <span><span class="block text-sm text-white/60">Телефон, {site.workHours.toLowerCase()}</span><span class="font-display text-2xl">{site.phone}</span></span>
           </a>
-          <div class="grid grid-cols-3 gap-3">
-            <a href={site.max} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">MAX</a>
-            <a href={site.telegram} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">Telegram</a>
-            <a href={site.vk} target="_blank" rel="noopener" class="rounded-3xl border border-line bg-surface p-5 text-center font-medium hover:border-ink">ВКонтакте</a>
-          </div>
+          <Socials size="lg" />
           <div class="flex items-center gap-4 rounded-4xl border border-line bg-surface p-6">
             <span class="grid size-12 place-items-center rounded-2xl bg-paper"><Icon name="pin" /></span>
             <span>{site.address}</span>

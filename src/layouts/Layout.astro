@@ -50,11 +50,6 @@ const org = {
     <!-- TODO: счётчик Яндекс Метрики (вставить после регистрации) -->
   </head>
   <body class="min-h-dvh">
-    {import.meta.env.PUBLIC_STATIC_DEMO === '1' && (
-      <div class="bg-glow px-4 py-2 text-center text-xs font-semibold text-ink sm:text-sm">
-        Демо-версия: цены, условия, контакты, фото и отзывы пока примерные
-      </div>
-    )}
     <Header />
     <main>
       <slot />

@@ -2,6 +2,7 @@
 import { site } from '../config';
 import { services } from '../data/services';
 import Logo from './Logo.astro';
+import Socials from './Socials.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="relative bg-ink pb-28 pt-16 text-white md:pb-10">
@@ -13,11 +14,7 @@ const year = new Date().getFullYear();
         <p class="max-w-sm text-sm text-white/60">Натяжные потолки {site.cityIn} и районе. Бесплатный замер, монтаж за 1 день.</p>
         <a href={site.phoneHref} class="font-display text-2xl font-medium hover:text-glow" data-goal="phone_click">{site.phone}</a>
         <p class="text-sm text-white/60">{site.workHours}</p>
-        <div class="flex gap-2">
-          <a href={site.max} class="btn-ghost-dark !px-4 !py-2 text-sm" target="_blank" rel="noopener">MAX</a>
-          <a href={site.telegram} class="btn-ghost-dark !px-4 !py-2 text-sm" target="_blank" rel="noopener">Telegram</a>
-          <a href={site.vk} class="btn-ghost-dark !px-4 !py-2 text-sm" target="_blank" rel="noopener">ВКонтакте</a>
-        </div>
+        <Socials />
       </div>
       <div>
         <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-white/40">Потолки</p>
@@ -35,7 +32,7 @@ const year = new Date().getFullYear();
         </ul>
       </div>
     </div>
-    <div class="flex flex-col gap-2 pt-6 text-xs text-white/40 sm:flex-row sm:justify-between">
+    <div class="flex flex-col gap-2 pt-6 text-xs text-white/50 sm:flex-row sm:justify-between">
       <p>© {year} {site.name}. {site.legal}</p>
       <p>Цены на сайте носят информационный характер и не являются публичной офертой.</p>
     </div>
