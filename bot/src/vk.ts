@@ -30,7 +30,9 @@ export const PRICES = {
 export const DISTRICTS = ['Зашекснинский', 'Заягорбский', 'Индустриальный', 'Северный', 'Череповецкий район', 'Другое'];
 
 const SITE = 'https://xn--35-vlcherag2a.xn--p1ai';
-const POLICY = 'https://потолки35.рф/politika/';
+const HOME = 'https://потолки35.рф/';
+const POLICY = `${HOME}politika/`;
+const PHONE = '+7 (965) 744-14-44';
 const HOUR = 3_600_000;
 const SHORT_QUIET = 24 * HOUR; // после разговора с ботом не показываем меню на каждое сообщение
 const LONG_QUIET = 7 * 24 * HOUR; // после заявки или ответа человека
@@ -124,7 +126,7 @@ const choice = (items: [string, string][], perRow = 3) => {
 };
 const count = (labels: string[]) => choice(labels.map((n) => [n, n]), 5);
 
-const MENU_TEXT = 'Здравствуйте! Это Потолки35, натяжные потолки в Череповце и районе.\n\nЗдесь можно посчитать цену и заказать замер. Вопросы пишите прямо в этот диалог.';
+const MENU_TEXT = '👋 Здравствуйте!\n\nЭто Потолки35, мы занимаемся установкой качественных, современных натяжных потолков.\n\nЗдесь можно посчитать цену, заказать замер или уточнить свой вопрос — пишите прямо в чат.';
 const PRICES_TEXT = [
   'Цены:',
   '',
@@ -138,7 +140,7 @@ const PRICES_TEXT = [
   `Скрытый карниз ПК-14: от ${rub(PRICES.hiddenCornice)}/м`,
   `Гардина в ванную АМ-1: от ${rub(PRICES.bathCurtain)}/м`,
   '',
-  `Минимальный заказ: ${rub(PRICES.minOrder)}`,
+  `Точную цену поможем определить по звонку ${PHONE} или по заявке на сайте: ${HOME}`,
 ].join('\n');
 
 const ASK: Record<Exclude<Step, ''>, [string, string]> = {

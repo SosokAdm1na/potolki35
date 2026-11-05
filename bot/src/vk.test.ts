@@ -46,6 +46,15 @@ test('расчёт такой же, как в калькуляторе сайт�
   assert.equal(small.total, 7000);
 });
 
+test('приветствие и цены', async () => {
+  const t = setup();
+  await t.msg('Начать', { command: 'start' });
+  assert.match(t.last(), /^👋 Здравствуйте!\n\nЭто Потолки35/);
+  await t.msg('Цены', { a: 'prices' });
+  assert.doesNotMatch(t.last(), /Минимальный заказ/);
+  assert.ok(t.last().includes(site.phone) && t.last().includes('https://потолки35.рф/'));
+});
+
 test('номер телефона', () => {
   assert.equal(normalizePhone('8 921 000-00-00'), '+7 (921) 000-00-00');
   assert.equal(normalizePhone('9210000000'), '+7 (921) 000-00-00');
