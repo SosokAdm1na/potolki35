@@ -60,6 +60,13 @@ export interface PendingInput {
   prompt_id: number | null;
 }
 
+export interface VkDialog {
+  peer_id: number;
+  step: string;
+  data: string;
+  quiet_until: number;
+}
+
 export type NewLead = Pick<Lead, 'ext' | 'created_at' | 'name' | 'phone' | 'phone_digits' | 'method' | 'area' | 'object' | 'timing' | 'district' | 'address' | 'comment' | 'calc' | 'form' | 'page' | 'channel' | 'utm'>;
 
 const SCHEMA = `
@@ -121,6 +128,12 @@ const SCHEMA = `
     prompt_id INTEGER
   );
   CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS vk_dialogs (
+    peer_id INTEGER PRIMARY KEY,
+    step TEXT NOT NULL DEFAULT '',
+    data TEXT NOT NULL DEFAULT '{}',
+    quiet_until INTEGER NOT NULL DEFAULT 0
+  );
 `;
 
 export class Db {
@@ -257,5 +270,13 @@ export class Db {
   }
   clearInput(id: number) {
     this.db.prepare('DELETE FROM inputs WHERE tg_id = ?').run(id);
+  }
+
+  // --- диалоги с клиентами в ВК
+  vkDialog(peer: number): VkDialog | undefined {
+    return this.db.prepare('SELECT * FROM vk_dialogs WHERE peer_id = ?').get(peer) as unknown as VkDialog | undefined;
+  }
+  saveVkDialog(peer: number, step: string, data: string, quietUntil: number) {
+    this.db.prepare('INSERT OR REPLACE INTO vk_dialogs(peer_id, step, data, quiet_until) VALUES(?, ?, ?, ?)').run(peer, step, data, quietUntil);
   }
 }

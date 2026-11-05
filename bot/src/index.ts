@@ -1,6 +1,7 @@
 import { Db } from './db.ts';
 import { createBot } from './bot.ts';
 import { pullLeads } from './intake.ts';
+import { createVk } from './vk.ts';
 
 const need = (key: string) => {
   const value = process.env[key];
@@ -34,8 +35,15 @@ await bot.init();
 await setup().catch((e) => console.error('Настройка меню:', e.message));
 const timer = setInterval(tick, 5000);
 
+// Бот группы ВК включается, когда на сервере есть ключ сообщества.
+const vkStop = new AbortController();
+if (process.env.VK_TOKEN) {
+  void createVk(db, { token: process.env.VK_TOKEN, groupId: Number(need('VK_GROUP_ID')) }).run(vkStop.signal);
+}
+
 const stop = () => {
   clearInterval(timer);
+  vkStop.abort();
   void bot.stop();
 };
 process.once('SIGTERM', stop);
