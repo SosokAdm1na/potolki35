@@ -18,9 +18,9 @@ const list = works.slice(0, limit);
       </div>
     )}
 
-    <div class="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+    <div class:list={['sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3', bare ? 'grid gap-4' : '-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4']}>
       {list.map((w, i) => (
-        <figure class="reveal group relative w-[82%] shrink-0 snap-start overflow-hidden rounded-4xl sm:w-auto" style={`transition-delay:${(i % 3) * 80}ms`}>
+        <figure class:list={['reveal group relative overflow-hidden rounded-4xl', !bare && 'w-[82%] shrink-0 snap-start sm:w-auto']} style={`transition-delay:${(i % 3) * 80}ms`}>
           <Image src={w.photo} alt={w.title} widths={[480, 800]} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 82vw" class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105" />
           <figcaption class="absolute inset-x-3 bottom-3 rounded-3xl bg-ink/70 p-4 text-white backdrop-blur-md">
             <p class="font-medium">{w.title}</p>
