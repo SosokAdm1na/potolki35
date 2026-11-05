@@ -21,7 +21,7 @@ import { site } from '../config';
             <span class="grid size-12 place-items-center rounded-2xl bg-paper"><Icon name="pin" /></span>
             <span>{site.address}</span>
           </div>
-          <p class="text-sm text-muted">{site.legal}</p>
+          {site.legal && <p class="text-sm text-muted">{site.legal}</p>}
         </div>
       </div>
       <div class="rounded-[2.5rem] bg-surface p-6 sm:p-10">

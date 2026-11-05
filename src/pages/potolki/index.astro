@@ -4,7 +4,7 @@ import ServiceGrid from '../../components/ServiceGrid.astro';
 import CtaForm from '../../components/CtaForm.astro';
 import { site } from '../../config';
 ---
-<Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description="Все виды натяжных потолков: матовые, сатиновые, глянцевые, тканевые, парящие, теневые, световые линии и двухуровневые. Цены с монтажом в Череповце.">
+<Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description="Все виды натяжных потолков: матовые, сатиновые, глянцевые, парящие, теневые, световые линии и двухуровневые. Цены с монтажом в Череповце.">
   <section class="pb-8 pt-10 sm:pb-12 sm:pt-16">
     <div class="container-x">
       <p class="eyebrow">Каталог</p>
@@ -12,6 +12,6 @@ import { site } from '../../config';
       <p class="mt-5 max-w-2xl text-lg text-muted">Цены указаны с материалами и монтажом. Замер бесплатно.</p>
     </div>
   </section>
-  <ServiceGrid exclude="__none__" bare />
+  <ServiceGrid bare />
   <CtaForm source="Каталог потолков" />
 </Layout>

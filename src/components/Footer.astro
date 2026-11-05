@@ -33,7 +33,7 @@ const year = new Date().getFullYear();
       </div>
     </div>
     <div class="flex flex-col gap-2 pt-6 text-xs text-white/50 sm:flex-row sm:justify-between">
-      <p>© {year} {site.name}. {site.legal}</p>
+      <p>© {year} {site.name}{site.legal && `. ${site.legal}`}</p>
       <p>Цены на сайте носят информационный характер и не являются публичной офертой.</p>
     </div>
   </div>

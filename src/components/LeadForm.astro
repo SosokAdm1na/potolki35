@@ -12,14 +12,12 @@ const { id, source = 'Форма на сайте', compact = false } = Astro.pro
 const methods = [
   { v: 'call', l: 'Звонок' },
   { v: 'max', l: 'MAX' },
-  { v: 'telegram', l: 'Telegram' },
-  { v: 'email', l: 'Email' },
 ];
 const areas = ['до 20 м²', '20–50 м²', '50–100 м²', '100+ м²'];
 const objects = ['Квартира', 'Дом', 'Коммерция'];
 const timing = ['Срочно', 'В течение месяца', 'Пока узнаю цену'];
 ---
-<form class="lead-form flex flex-col gap-5" data-lead-form data-source={source} novalidate>
+<form class="lead-form flex flex-col gap-5" data-lead-form data-source={source} data-phone={site.phone} novalidate>
   <input type="hidden" name="calc" value="" />
   <!-- ловушка для ботов -->
   <div class="absolute left-[-9999px]" aria-hidden="true">
@@ -39,7 +37,7 @@ const timing = ['Срочно', 'В течение месяца', 'Пока уз
 
   <fieldset class="flex flex-col gap-2">
     <legend class="mb-2 text-sm font-medium">Где удобнее связаться?</legend>
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-2">
       {methods.map((m, i) => (
         <label class="relative block">
           <input class="chip-input sr-only" type="radio" name="method" value={m.v} checked={i === 0} />
@@ -47,7 +45,6 @@ const timing = ['Срочно', 'В течение месяца', 'Пока уз
         </label>
       ))}
     </div>
-    <input class="field mt-2 hidden" name="email" type="email" autocomplete="email" placeholder="you@mail.ru" data-email-field />
   </fieldset>
 
   <details class="group rounded-2xl border border-dashed border-line bg-white/50 open:bg-white" open={!compact}>

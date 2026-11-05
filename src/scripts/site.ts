@@ -95,7 +95,6 @@ document.addEventListener('click', (e) => {
 document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form) => {
   const startedAt = Date.now();
   const phone = form.querySelector<HTMLInputElement>('[data-phone]');
-  const email = form.querySelector<HTMLInputElement>('[data-email-field]');
   const err = form.querySelector<HTMLElement>('[data-form-error]');
   const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 
@@ -104,9 +103,6 @@ document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form
     if (!phone.value) phone.value = '+7 (';
   });
 
-  form.querySelectorAll<HTMLInputElement>('input[name="method"]').forEach((r) =>
-    r.addEventListener('change', () => email?.classList.toggle('hidden', r.value !== 'email' || !r.checked)),
-  );
 
   const showError = (msg: string) => {
     if (!err) return;
@@ -120,21 +116,11 @@ document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form
     const fd = new FormData(form);
     const digits = String(fd.get('phone') || '').replace(/\D/g, '');
     if (digits.length !== 11) return showError('Проверьте номер телефона — нужно 10 цифр после +7.');
-    if (fd.get('method') === 'email' && !/^\S+@\S+\.\S+$/.test(String(fd.get('email') || '')))
-      return showError('Укажите email, чтобы мы могли написать.');
     if (!fd.get('consent')) return showError('Нужно согласие на обработку данных.');
 
-    // Демо на статическом хостинге: сервера нет, заявка никуда не уходит — честно об этом говорим.
-    if (import.meta.env.PUBLIC_STATIC_DEMO === '1') {
-      form.classList.add('hidden');
-      const box = form.nextElementSibling as HTMLElement | null;
-      const title = box?.querySelector('h3');
-      const text = box?.querySelector('p');
-      if (title) title.textContent = 'Это демо-версия';
-      if (text) text.textContent = 'Заявка не отправлена. На рабочем сайте она сразу придёт менеджеру в Telegram или MAX.';
-      box?.classList.remove('hidden');
-      box?.classList.add('flex');
-      return;
+    // Копия на GitHub Pages: сервера заявок там нет.
+    if (import.meta.env.PUBLIC_MIRROR === '1') {
+      return showError(`Заявки принимаем на потолки35.рф или по телефону ${form.dataset.phone}.`);
     }
 
     const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
@@ -181,3 +167,19 @@ const io = new IntersectionObserver(
 document.querySelectorAll('.reveal, .line-draw').forEach((el) => io.observe(el));
 
 captureSource();
+
+// Отклик кнопок: от места нажатия расходится тёплый свет.
+const pressable = '.btn-primary, .btn-glow, .btn-ghost, .btn-ghost-dark, [data-dec], [data-inc], [data-reviews-prev], [data-reviews-next]';
+document.addEventListener('pointerdown', (e) => {
+  const el = (e.target as Element).closest<HTMLElement>(pressable);
+  if (!el) return;
+  const box = el.getBoundingClientRect();
+  el.style.setProperty('--press-x', `${e.clientX - box.left}px`);
+  el.style.setProperty('--press-y', `${e.clientY - box.top}px`);
+  el.classList.remove('is-pressed');
+  void el.offsetWidth; // перезапуск анимации при быстрых нажатиях
+  el.classList.add('is-pressed');
+});
+document.addEventListener('animationend', (e) => {
+  if (e.animationName === 'press-light') (e.target as Element).classList.remove('is-pressed');
+});

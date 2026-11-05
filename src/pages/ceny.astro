@@ -6,10 +6,12 @@ import { site, prices } from '../config';
 import { services } from '../data/services';
 const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
 const extras = [
-  ['Точечный светильник с установкой', fmt(prices.spotlight), 'шт'],
-  ['Закладная под люстру', fmt(prices.chandelier), 'шт'],
+  ['Установка точечного светильника', fmt(prices.spotlight), 'шт'],
+  ['Установка люстры', 'от ' + fmt(prices.chandelier), 'шт'],
   ['Световая линия', fmt(prices.lightLine), 'пог. м'],
   ['Обход трубы', fmt(prices.pipe), 'шт'],
+  ['Скрытый карниз ПК-14', 'от ' + fmt(prices.hiddenCornice), 'пог. м'],
+  ['Гардина в ванную АМ-1', 'от ' + fmt(prices.bathCurtain), 'пог. м'],
   ['Теневой профиль', fmt(prices.profile.shadow.perM), 'пог. м'],
   ['Парящий профиль с подсветкой', fmt(prices.profile.floating.perM), 'пог. м'],
 ];
@@ -32,7 +34,7 @@ const extras = [
         <table class="mt-6 w-full text-left">
           <tbody class="divide-y divide-line">
             {services.map((s) => (
-              <tr><td class="py-3.5"><a href={`/potolki/${s.slug}/`} class="hover:underline">{s.title}</a></td><td class="py-3.5 text-right font-semibold whitespace-nowrap">от {fmt(s.priceFrom)}<span class="font-normal text-muted"> / {s.unit}</span></td></tr>
+              <tr><td class="py-3.5"><a href={`/potolki/${s.slug}/`} class="hover:underline">{s.title}</a></td><td class="py-3.5 text-right font-semibold whitespace-nowrap">{s.price}</td></tr>
             ))}
           </tbody>
         </table>

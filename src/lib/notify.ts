@@ -23,7 +23,7 @@ export interface Lead {
   utm: Record<string, string>;
 }
 
-const methodLabel: Record<string, string> = { call: '📞 Звонок', max: '💬 MAX', telegram: '✈️ Telegram', email: '✉️ Email' };
+const methodLabel: Record<string, string> = { call: '📞 Звонок', max: '💬 MAX' };
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

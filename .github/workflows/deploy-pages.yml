@@ -1,4 +1,4 @@
-name: Демо на GitHub Pages
+name: Копия на GitHub Pages
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEPLOY_BASE: /potolki35/
-      PUBLIC_STATIC_DEMO: '1'
+      PUBLIC_MIRROR: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

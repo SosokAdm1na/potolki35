@@ -24,11 +24,8 @@ const { s } = Astro.props as { s: Service };
         <div>
           <h1 class="text-[34px] leading-[1.05] font-medium sm:text-5xl">{s.h1}</h1>
           <p class="mt-5 text-lg leading-relaxed text-muted">{s.intro}</p>
-          <div class="mt-6 flex items-baseline gap-3">
-            <span class="text-muted">от</span>
-            <span class="font-display text-4xl font-medium">{s.priceFrom.toLocaleString('ru-RU')} ₽</span>
-            <span class="text-muted">/ {s.unit} с монтажом</span>
-          </div>
+          <p class="mt-6 font-display text-4xl font-medium">{s.price}</p>
+          <p class="mt-1 text-muted">{s.price.startsWith('+') ? 'к цене полотна, с монтажом' : 'с монтажом'}</p>
           <div class="mt-8 flex flex-col gap-3 sm:flex-row">
             <button type="button" class="btn-primary !py-4" data-open-lead data-lead-source={`Страница: ${s.title}`}>Бесплатный замер <Icon name="arrow" /></button>
             <a href="#calc" class="btn-ghost !py-4"><Icon name="calc" /> Рассчитать</a>
@@ -59,6 +56,19 @@ const { s } = Astro.props as { s: Service };
       </div>
     </div>
   </section>
+
+  {s.gallery.length > 0 && (
+    <section class="pb-16 sm:pb-[5.5rem]">
+      <div class="container-x">
+        <h2 class="h2 sec-head">Ещё фото</h2>
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {s.gallery.map((p) => (
+            <Image src={p} alt={s.h1} widths={[400, 700]} sizes="(min-width:1024px) 25vw, 50vw" class="aspect-[4/3] w-full rounded-3xl object-cover" />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <Calculator />
   <Works limit={3} />

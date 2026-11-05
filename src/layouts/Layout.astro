@@ -34,7 +34,7 @@ const org = {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {site.demo && <meta name="robots" content="noindex, nofollow" />}
+    {import.meta.env.PUBLIC_MIRROR === '1' && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#f4f2ee" />

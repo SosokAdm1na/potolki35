@@ -1,27 +1,35 @@
 import type { ImageMetadata } from 'astro';
-import kitchenDark from '../assets/photos/kitchen-dark.jpg';
-import bedroomWarm from '../assets/photos/bedroom-warm.jpg';
-import bathroomWood from '../assets/photos/bathroom-wood.jpg';
-import livingRecess from '../assets/photos/living-recess.jpg';
-import bathroomStone from '../assets/photos/bathroom-stone.jpg';
-import coffered from '../assets/photos/coffered.jpg';
-import heroLiving from '../assets/photos/hero-living.jpg';
-import bedroomTrack from '../assets/photos/bedroom-track.jpg';
+import bath from '../assets/works/bath.jpg';
+import livingLevel from '../assets/works/living-level.jpg';
+import livingLines from '../assets/works/living-lines.jpg';
+import kitchen from '../assets/works/kitchen.jpg';
+import bedroom from '../assets/works/bedroom.jpg';
+import bedroomShadow from '../assets/works/bedroom-shadow.jpg';
+import matte1 from '../assets/types/matte-1.jpg';
+import satin1 from '../assets/types/satin-1.jpg';
+import satin2 from '../assets/types/satin-2.jpg';
+import gloss2 from '../assets/types/gloss-2.jpg';
+import float3 from '../assets/types/float-3.jpg';
+import lines3 from '../assets/types/lines-3.jpg';
 
-// ДЕМО: фото-заглушки из Unsplash. Заменить на реальные объекты заказчика, добавить район, площадь и срок.
 export interface Work {
   photo: ImageMetadata;
   title: string;
   type: string;
 }
 
+// Первые шесть показываются на главной, все — на странице работ.
 export const works: Work[] = [
-  { photo: heroLiving, title: 'Гостиная', type: 'Матовый, световые линии' },
-  { photo: kitchenDark, title: 'Кухня', type: 'Сатиновый с подсветкой' },
-  { photo: bedroomWarm, title: 'Спальня', type: 'Теневой профиль' },
-  { photo: bathroomWood, title: 'Ванная', type: 'Глянцевый' },
-  { photo: livingRecess, title: 'Гостиная', type: 'Двухуровневый' },
-  { photo: bedroomTrack, title: 'Спальня', type: 'Теневой профиль, треки' },
-  { photo: bathroomStone, title: 'Санузел', type: 'Матовый' },
-  { photo: coffered, title: 'Кессонный потолок', type: 'Многоуровневый' },
+  { photo: livingLines, title: 'Гостиная', type: 'Световые линии' },
+  { photo: kitchen, title: 'Кухня', type: 'Матовый, накладные светильники' },
+  { photo: bedroomShadow, title: 'Спальня', type: 'Теневой профиль' },
+  { photo: bath, title: 'Ванная', type: 'Световые линии' },
+  { photo: livingLevel, title: 'Гостиная', type: 'Двухуровневый, треки' },
+  { photo: bedroom, title: 'Спальня', type: 'Матовый, точечный свет' },
+  { photo: matte1, title: 'Гостиная', type: 'Матовый' },
+  { photo: satin1, title: 'Кухня', type: 'Сатиновый' },
+  { photo: lines3, title: 'Коридор', type: 'Световые линии' },
+  { photo: gloss2, title: 'Кухня-гостиная', type: 'Глянцевый' },
+  { photo: float3, title: 'Комната', type: 'Парящий' },
+  { photo: satin2, title: 'Спальня', type: 'Сатиновый с подсветкой' },
 ];

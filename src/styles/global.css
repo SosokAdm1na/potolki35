@@ -205,3 +205,42 @@ input[type="range"]::-moz-range-thumb {
   background: #fff; border: 6px solid var(--color-glow);
   cursor: pointer;
 }
+
+/* Отклик нажатия: кнопка чуть проседает, от пальца расходится тёплый свет */
+.btn-primary, .btn-glow, .btn-ghost, .btn-ghost-dark, [data-dec], [data-inc], [data-reviews-prev], [data-reviews-next] {
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary:active, .btn-glow:active, .btn-ghost:active, .btn-ghost-dark:active, [data-dec]:active, [data-inc]:active {
+  transform: scale(0.97);
+}
+.is-pressed::after {
+  content: "";
+  position: absolute;
+  left: var(--press-x, 50%);
+  top: var(--press-y, 50%);
+  width: 16px;
+  height: 16px;
+  margin: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 201, 120, 0.95), rgba(255, 181, 71, 0.45) 45%, transparent 72%);
+  pointer-events: none;
+  animation: press-light 0.55s ease-out forwards;
+}
+.btn-glow.is-pressed::after {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4) 45%, transparent 72%);
+}
+@keyframes press-light {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(32); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-pressed::after { animation-duration: 0.01s; }
+}
+.review-track {
+  scrollbar-width: none;
+}
+.review-track::-webkit-scrollbar {
+  display: none;
+}

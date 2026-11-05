@@ -1,4 +1,4 @@
-// Для демо на GitHub Pages: сайт живёт в подпапке, поэтому добавляем её к внутренним ссылкам.
+// Для копии на GitHub Pages: сайт живёт в подпапке, поэтому добавляем её к внутренним ссылкам.
 // Файлы Astro (картинки, стили, скрипты) получают подпапку сами через опцию base.
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
