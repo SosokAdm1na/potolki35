@@ -1,6 +1,5 @@
 import type { ImageMetadata } from 'astro';
 import bath from '../assets/works/bath.jpg';
-import livingLevel from '../assets/works/living-level.jpg';
 import livingLines from '../assets/works/living-lines.jpg';
 import kitchen from '../assets/works/kitchen.jpg';
 import bedroom from '../assets/works/bedroom.jpg';
@@ -24,7 +23,6 @@ export const works: Work[] = [
   { photo: kitchen, title: 'Кухня', type: 'Матовый, накладные светильники' },
   { photo: bedroomShadow, title: 'Спальня', type: 'Теневой профиль' },
   { photo: bath, title: 'Ванная', type: 'Световые линии' },
-  { photo: livingLevel, title: 'Гостиная', type: 'Двухуровневый, треки' },
   { photo: bedroom, title: 'Спальня', type: 'Матовый, точечный свет' },
   { photo: matte1, title: 'Гостиная', type: 'Матовый' },
   { photo: satin1, title: 'Кухня', type: 'Сатиновый' },

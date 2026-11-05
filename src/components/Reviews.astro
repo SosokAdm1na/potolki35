@@ -20,10 +20,10 @@ import Icon from './Icon.astro';
           <blockquote class="flex w-[86%] shrink-0 snap-start flex-col gap-5 rounded-4xl border border-line bg-surface p-6 sm:w-[46%] sm:p-7 lg:w-[calc((100%-2rem)/3)]">
             <p class="flex-1 leading-relaxed">{r.text}</p>
             <footer class="flex items-center gap-3">
-              <span class="grid size-11 shrink-0 place-items-center rounded-full bg-ink font-display font-medium text-glow">{r.name[0]}</span>
+              <span class="grid size-11 shrink-0 place-items-center rounded-full bg-ink font-display font-medium text-glow">{r.name[0].toUpperCase()}</span>
               <span class="min-w-0">
                 <b class="block font-semibold">{r.name}</b>
-                <span class="block truncate text-sm text-muted">{[r.where, r.date].filter(Boolean).join(' · ')}</span>
+                {(r.where || r.date) && <span class="block truncate text-sm text-muted">{[r.where, r.date].filter(Boolean).join(' · ')}</span>}
               </span>
               {r.source && (r.url
                 ? <a href={r.url} target="_blank" rel="noopener" class="ml-auto shrink-0 text-xs font-medium text-muted underline underline-offset-2 hover:text-ink">{r.source}</a>

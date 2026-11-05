@@ -45,7 +45,7 @@ import { site, prices } from '../config';
         ['ruler', 'Замер бесплатно', 'по городу и району'],
         ['clock', 'Монтаж за 1 день', 'в обычной квартире'],
         ['ruble', 'Цена с монтажом', 'материалы и работа'],
-        ['shield', 'Работаем по договору', 'с гарантией'],
+        ['check', `Скидка ${site.discountPercent}%`, 'по заявке с сайта'],
       ].map(([i, t, d]) => (
         <div class="flex items-center gap-2.5 sm:gap-3">
           <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-paper sm:size-11 sm:rounded-2xl"><Icon name={i} class="size-5" /></span>

@@ -22,10 +22,6 @@ import lines2 from '../assets/types/lines-2.jpg';
 import lines3 from '../assets/types/lines-3.jpg';
 import lines4 from '../assets/types/lines-4.jpg';
 import lines5 from '../assets/types/lines-5.jpg';
-import level1 from '../assets/types/level-1.jpg';
-import level2 from '../assets/types/level-2.jpg';
-import level3 from '../assets/types/level-3.jpg';
-import level4 from '../assets/types/level-4.jpg';
 import { prices } from '../config';
 
 export interface Service {
@@ -130,20 +126,6 @@ export const services: Service[] = [
     intro: 'Алюминиевый профиль с рассеивателем встраивается прямо в полотно. Линии могут пересекаться, поворачивать и переходить на стены.',
     features: ['Прямые, угловые и пересекающиеся линии', 'Свет без пятен', 'Может заменить основной свет', 'Возможен переход на стену'],
     goodFor: ['Кухня', 'Гостиная', 'Коридор', 'Коммерческие помещения'],
-  },
-  {
-    slug: 'dvuhurovnevye',
-    title: 'Двухуровневые',
-    h1: 'Двухуровневые натяжные потолки в Череповце',
-    short: 'Делят комнату на зоны и прячут подсветку.',
-    price: 'от 1 390 ₽/м²',
-    photo: level1,
-    gallery: [level2, level3, level4],
-    seoTitle: 'Двухуровневые натяжные потолки в Череповце — проект и монтаж',
-    seoDescription: 'Двухуровневые натяжные потолки с подсветкой в Череповце. Бесплатный замер.',
-    intro: 'Второй уровень выделяет зону в комнате, закрывает коммуникации и оставляет место для подсветки. Часто делают на кухне-гостиной.',
-    features: ['Зонирование комнаты', 'Закрывает коммуникации', 'Скрытая подсветка', 'Можно сочетать цвета и фактуры'],
-    goodFor: ['Кухня-гостиная', 'Гостиная', 'Загородный дом'],
   },
 ];
 

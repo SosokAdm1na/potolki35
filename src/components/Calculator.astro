@@ -163,7 +163,6 @@ const counters = [
       if (state.pipe) rows.push([`Обход труб × ${state.pipe}`, state.pipe * P.pipe]);
       if (state.cornice) rows.push([`Скрытый карниз ПК-14, ${state.cornice} м`, state.cornice * P.hiddenCornice]);
       if (state.bath) rows.push([`Гардина в ванную АМ-1, ${state.bath} м`, state.bath * P.bathCurtain]);
-      if (state.rooms > 1) rows.push([`Доп. помещения × ${state.rooms - 1}`, (state.rooms - 1) * P.extraRoom]);
 
       let total = rows.reduce((s, r) => s + r[1], 0);
       if (total < P.minOrder) {
