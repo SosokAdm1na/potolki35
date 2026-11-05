@@ -12,7 +12,7 @@ const db = new Db(need('BOT_DB'));
 const leadsFile = need('LEADS_FILE');
 const { bot, deliver, setup } = createBot(db, {
   token: need('BOT_TOKEN'),
-  invite: need('BOT_INVITE'),
+  admins: new Set(need('BOT_ADMINS').split(',').map((id) => Number(id.trim())).filter(Boolean)),
   apiRoot: process.env.BOT_API_ROOT,
 });
 

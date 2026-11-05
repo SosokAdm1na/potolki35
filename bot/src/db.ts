@@ -220,18 +220,12 @@ export class Db {
   members(): Member[] {
     return this.db.prepare('SELECT * FROM members WHERE active = 1 ORDER BY role, name').all() as unknown as Member[];
   }
-  /** Первый вошедший становится админом. */
   join(id: number, name: string, username: string): Member {
-    const hasAdmin = this.db.prepare("SELECT 1 FROM members WHERE role = 'admin' AND active = 1").get();
-    const role: Role = hasAdmin ? 'member' : 'admin';
     this.db.prepare(`
-      INSERT INTO members(tg_id, name, username, role) VALUES(?, ?, ?, ?)
+      INSERT INTO members(tg_id, name, username, role) VALUES(?, ?, ?, 'admin')
       ON CONFLICT(tg_id) DO UPDATE SET name = excluded.name, username = excluded.username, active = 1
-    `).run(id, name, username, role);
+    `).run(id, name, username);
     return this.member(id)!;
-  }
-  kick(id: number) {
-    this.db.prepare('UPDATE members SET active = 0 WHERE tg_id = ?').run(id);
   }
   setScreen(id: number, messageId: number | null) {
     this.db.prepare('UPDATE members SET screen_id = ? WHERE tg_id = ?').run(messageId, id);

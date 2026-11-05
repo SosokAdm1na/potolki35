@@ -173,7 +173,7 @@ export function menuText(counts: Record<Status, number>): string {
   ].join('\n');
 }
 
-export function menuKeyboard(counts: Record<Status, number>, admin: boolean): InlineKeyboard {
+export function menuKeyboard(counts: Record<Status, number>): InlineKeyboard {
   const k = new InlineKeyboard();
   k.text(`Новые · ${counts.new}`, 'm:list:new:0').icon(icon('star')).success().row();
   k.text(`В работе · ${counts.work}`, 'm:list:work:0').icon(icon('refresh')).primary();
@@ -181,8 +181,7 @@ export function menuKeyboard(counts: Record<Status, number>, admin: boolean): In
   k.text(`Монтаж · ${counts.install}`, 'm:list:install:0').icon(icon('settings'));
   k.text('Архив', 'm:archive').icon(icon('calc')).row();
   k.text('Поиск', 'm:find').icon(icon('info'));
-  k.text('Статистика', 'm:stats:7').icon(icon('stats')).row();
-  if (admin) k.text('Команда', 'm:team').icon(icon('users'));
+  k.text('Статистика', 'm:stats:7').icon(icon('stats'));
   return k;
 }
 
@@ -247,20 +246,8 @@ export function statsKeyboard(active: string): InlineKeyboard {
   return k.row().text('В меню', 'm:home').icon(icon('back'));
 }
 
-export function teamText(members: Member[]): string {
-  const rows = members.map((m) => `${em(m.role === 'admin' ? 'star' : 'user')} ${esc(m.name)}${m.username ? ` · @${esc(m.username)}` : ''}`);
-  return [`${em('users')} <b>Команда</b>`, LINE, ...rows].join('\n');
-}
-
-export function teamKeyboard(members: Member[], inviteLink: string): InlineKeyboard {
-  const k = new InlineKeyboard();
-  k.copyText('Ссылка-приглашение', inviteLink).icon(icon('plus')).success().row();
-  for (const m of members) if (m.role !== 'admin') k.text(`Убрать ${m.name}`, `m:kick:${m.tg_id}`).icon(icon('cross')).danger().row();
-  return k.text('В меню', 'm:home').icon(icon('back'));
-}
-
 export function cancelKeyboard(): InlineKeyboard {
   return new InlineKeyboard().text('Отмена', 'm:cancel').icon(icon('back'));
 }
 
-export const lockText = `${em('lock')} Это рабочий бот Потолки35. Вход только по приглашению.`;
+export const lockText = `${em('lock')} Это рабочий бот Потолки35. Доступ закрыт.`;

@@ -5,7 +5,7 @@ import * as ui from './ui.ts';
 
 export interface BotOptions {
   token: string;
-  invite: string;
+  admins: Set<number>; // единственные, у кого есть доступ
   apiRoot?: string;
 }
 
@@ -19,7 +19,6 @@ export function createBot(db: Db, opts: BotOptions) {
   const bot = new Bot(opts.token, opts.apiRoot ? { client: { apiRoot: opts.apiRoot } } : undefined);
 
   const cardText = (l: Lead) => ui.leadText(l, db.events(l.id), l.assignee_id ? db.member(l.assignee_id) : undefined);
-  const inviteLink = () => `https://t.me/${bot.botInfo.username}?start=${opts.invite}`;
 
   /** Обновляет карточку заявки у всех, у кого она открыта. */
   async function syncCards(id: number) {
@@ -38,7 +37,7 @@ export function createBot(db: Db, opts: BotOptions) {
 
   /** Отправляет команде заявки, которые ещё не дошли. Сбой сети не теряет заявку: повтор на следующем круге. */
   async function deliver() {
-    const people = db.members();
+    const people = db.members().filter((m) => opts.admins.has(m.tg_id));
     if (!people.length) return;
     for (const lead of db.undelivered()) {
       let ok = true;
@@ -67,7 +66,7 @@ export function createBot(db: Db, opts: BotOptions) {
   /** Новое меню внизу чата, прошлое убирается. */
   async function sendMenu(ctx: Context, me: Member) {
     const counts = db.counts();
-    const msg = await ctx.reply(ui.menuText(counts), { ...HTML, reply_markup: ui.menuKeyboard(counts, me.role === 'admin') });
+    const msg = await ctx.reply(ui.menuText(counts), { ...HTML, reply_markup: ui.menuKeyboard(counts) });
     if (me.screen_id) await ctx.api.deleteMessage(me.tg_id, me.screen_id).catch(() => {});
     db.setScreen(me.tg_id, msg.message_id);
   }
@@ -85,25 +84,19 @@ export function createBot(db: Db, opts: BotOptions) {
 
   const team = new WeakMap<Context, Member>();
 
-  // Только личные чаты и только команда. Посторонние видят одну фразу.
+  // Только личные чаты и только ID из списка админов. Остальные видят одну фразу.
   bot.use(async (ctx, next) => {
     if (ctx.chat?.type !== 'private' || !ctx.from) return;
-    const payload = ctx.message?.text?.match(/^\/start\s+(\S+)/)?.[1];
-    if (payload === opts.invite) {
-      const name = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
-      const me = db.join(ctx.from.id, name, ctx.from.username ?? '');
-      await sendMenu(ctx, me);
-      await deliver();
-      return;
-    }
-    const me = db.member(ctx.from.id);
-    if (!me?.active) {
+    if (!opts.admins.has(ctx.from.id)) {
       if (ctx.callbackQuery) await ctx.answerCallbackQuery();
       else await ctx.reply(ui.lockText, HTML);
       return;
     }
-    team.set(ctx, me);
+    const known = db.member(ctx.from.id);
+    const name = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
+    team.set(ctx, known?.active ? known : db.join(ctx.from.id, name, ctx.from.username ?? ''));
     await next();
+    if (!known?.active) await deliver();
   });
 
   const member = (ctx: Context) => team.get(ctx)!;
@@ -114,10 +107,9 @@ export function createBot(db: Db, opts: BotOptions) {
   bot.callbackQuery(/^m:(.+)$/, async (ctx) => {
     const me = member(ctx);
     const [cmd, a, b] = ctx.match[1].split(':');
-    let notice: string | undefined;
     if (cmd === 'home') {
       const counts = db.counts();
-      await show(ctx, ui.menuText(counts), ui.menuKeyboard(counts, me.role === 'admin'));
+      await show(ctx, ui.menuText(counts), ui.menuKeyboard(counts));
       const c = db.card(ctx.chat!.id, ctx.msg!.message_id);
       if (c) db.dropCard(c.chat_id, c.message_id);
       db.setScreen(me.tg_id, ctx.msg!.message_id);
@@ -137,16 +129,8 @@ export function createBot(db: Db, opts: BotOptions) {
     } else if (cmd === 'cancel') {
       db.clearInput(me.tg_id);
       await ctx.deleteMessage().catch(() => {});
-    } else if (cmd === 'team' && me.role === 'admin') {
-      const people = db.members();
-      await show(ctx, ui.teamText(people), ui.teamKeyboard(people, inviteLink()));
-    } else if (cmd === 'kick' && me.role === 'admin') {
-      db.kick(Number(a));
-      const people = db.members();
-      await show(ctx, ui.teamText(people), ui.teamKeyboard(people, inviteLink()));
-      notice = 'Убрали из команды';
     }
-    await ctx.answerCallbackQuery(notice ? { text: notice } : undefined);
+    await ctx.answerCallbackQuery();
   });
 
   bot.callbackQuery(/^l:(\d+):([a-z]+)(?::(.+))?$/, async (ctx) => {
@@ -260,8 +244,8 @@ export function createBot(db: Db, opts: BotOptions) {
     ]);
     await bot.api.setChatMenuButton({ menu_button: { type: 'commands' } });
     await bot.api.setMyShortDescription('Рабочий бот заявок Потолки35');
-    await bot.api.setMyDescription('Рабочий бот заявок Потолки35. Вход только по приглашению.');
+    await bot.api.setMyDescription('Рабочий бот заявок Потолки35. Доступ закрыт.');
   }
 
-  return { bot, deliver, syncCards, setup, inviteLink };
+  return { bot, deliver, syncCards, setup };
 }

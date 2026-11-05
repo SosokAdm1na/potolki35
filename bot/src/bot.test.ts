@@ -14,7 +14,7 @@ function setup(fail?: () => boolean) {
   const dir = mkdtempSync(join(tmpdir(), 'p35-'));
   const db = new Db(join(dir, 'bot.db'));
   const file = join(dir, 'leads.jsonl');
-  const app = createBot(db, { token: '1:test', invite: 'secret' });
+  const app = createBot(db, { token: '1:test', admins: new Set([A, B]) });
   const calls: { method: string; payload: any }[] = [];
   let nextId = 1000;
   app.bot.botInfo = { id: 1, is_bot: true, first_name: 'T', username: 'test_bot', can_join_groups: true, can_read_all_group_messages: false, supports_inline_queries: false, can_connect_to_business: false, has_main_web_app: false } as any;
@@ -40,23 +40,38 @@ function setup(fail?: () => boolean) {
 
 const site = (over = {}) => JSON.stringify({ id: 'ABCDE', createdAt: '2026-11-05T11:32:00.000Z', name: 'Ирина <b>', phone: '+7 (921) 000-00-00', method: 'call', area: '', object: '', timing: '', district: 'Зашекснинский', address: 'Ленина 10', comment: '', calc: '18 м²', source: 'Калькулятор', page: '/', utm: { utm_source: 'yandex' }, ...over }) + '\n';
 
-test('чужой не проходит, по приглашению входит, первый становится админом', async () => {
+test('доступ только у ID из списка, ссылка ничего не даёт', async () => {
   const t = setup();
   await t.say(STRANGER, '/menu');
+  await t.say(STRANGER, '/start 5e4144837ae6fdfe654c4765');
+  await t.say(STRANGER, '9210000');
   assert.equal(t.db.member(STRANGER), undefined);
-  assert.match(t.calls.at(-1)!.payload.text, /только по приглашению/);
-  await t.say(A, '/start secret');
-  await t.say(B, '/start secret');
+  assert.match(t.calls.at(-1)!.payload.text, /Доступ закрыт/);
+  await t.press(STRANGER, 'm:stats:7', 1);
+  assert.equal(t.calls.filter((c) => c.method === 'editMessageText').length, 0);
+  await t.say(A, '/start');
+  await t.say(B, '/start');
   assert.equal(t.db.member(A)!.role, 'admin');
-  assert.equal(t.db.member(B)!.role, 'member');
-  await t.say(STRANGER, '/start wrong');
-  assert.equal(t.db.member(STRANGER), undefined);
+  assert.equal(t.db.member(B)!.role, 'admin');
+});
+
+test('человек не из списка не получает заявки, даже если остался в базе', async () => {
+  const t = setup();
+  t.db.join(STRANGER, 'Старый', '');
+  await t.say(A, '/start');
+  writeFileSync(t.file, site());
+  await pullLeads(t.db, t.file);
+  await t.app.deliver();
+  const to = t.calls.filter((c) => c.method === 'sendMessage' && /Заявка #1/.test(c.payload.text)).map((c) => c.payload.chat_id);
+  assert.deepEqual(to, [A]);
+  await t.say(STRANGER, '/menu');
+  assert.match(t.calls.at(-1)!.payload.text, /Доступ закрыт/);
 });
 
 test('заявка из файла приходит всем один раз, неполная строка ждёт', async () => {
   const t = setup();
-  await t.say(A, '/start secret');
-  await t.say(B, '/start secret');
+  await t.say(A, '/start');
+  await t.say(B, '/start');
   writeFileSync(t.file, site() + '{"id":"PART');
   assert.deepEqual(await pullLeads(t.db, t.file), [1]);
   await t.app.deliver();
@@ -72,7 +87,7 @@ test('заявка из файла приходит всем один раз, н
 test('сбой Telegram не теряет заявку', async () => {
   let down = false;
   const t = setup(() => down);
-  await t.say(A, '/start secret');
+  await t.say(A, '/start');
   writeFileSync(t.file, site());
   await pullLeads(t.db, t.file);
   down = true;
@@ -85,8 +100,8 @@ test('сбой Telegram не теряет заявку', async () => {
 
 test('заявка проходит весь путь, карточки обновляются у всех', async () => {
   const t = setup();
-  await t.say(A, '/start secret');
-  await t.say(B, '/start secret');
+  await t.say(A, '/start');
+  await t.say(B, '/start');
   writeFileSync(t.file, site());
   await pullLeads(t.db, t.file);
   await t.app.deliver();
@@ -126,7 +141,7 @@ test('заявка проходит весь путь, карточки обно
 
 test('отказ с причиной и возврат', async () => {
   const t = setup();
-  await t.say(A, '/start secret');
+  await t.say(A, '/start');
   writeFileSync(t.file, site());
   await pullLeads(t.db, t.file);
   await t.app.deliver();
@@ -140,7 +155,7 @@ test('отказ с причиной и возврат', async () => {
 
 test('поиск по телефону и кириллице', async () => {
   const t = setup();
-  await t.say(A, '/start secret');
+  await t.say(A, '/start');
   writeFileSync(t.file, site());
   await pullLeads(t.db, t.file);
   assert.equal(t.db.search('921 000').length, 1);
@@ -149,18 +164,6 @@ test('поиск по телефону и кириллице', async () => {
   assert.equal(t.db.search('петров').length, 0);
   await t.say(A, '9210000');
   assert.match(t.calls.filter((c) => c.method === 'sendMessage').at(-1)!.payload.text, /Нашлось: 1/);
-});
-
-test('команда: участник не видит управление, админ убирает', async () => {
-  const t = setup();
-  await t.say(A, '/start secret');
-  await t.say(B, '/start secret');
-  await t.press(B, `m:kick:${A}`, 1);
-  assert.equal(t.db.member(A)!.active, 1);
-  await t.press(A, `m:kick:${B}`, 1);
-  assert.equal(t.db.member(B)!.active, 0);
-  await t.say(B, '/menu');
-  assert.match(t.calls.at(-1)!.payload.text, /только по приглашению/);
 });
 
 test('вид и даты', () => {
