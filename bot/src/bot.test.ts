@@ -40,14 +40,17 @@ function setup(fail?: () => boolean) {
 
 const site = (over = {}) => JSON.stringify({ id: 'ABCDE', createdAt: '2026-11-05T11:32:00.000Z', name: 'Ирина <b>', phone: '+7 (921) 000-00-00', method: 'call', area: '', object: '', timing: '', district: 'Зашекснинский', address: 'Ленина 10', comment: '', calc: '18 м²', source: 'Калькулятор', page: '/', utm: { utm_source: 'yandex' }, ...over }) + '\n';
 
-test('доступ только у ID из списка, ссылка ничего не даёт', async () => {
+test('рабочая часть только у ID из списка, ссылка ничего не даёт', async () => {
   const t = setup();
   await t.say(STRANGER, '/menu');
   await t.say(STRANGER, '/start 5e4144837ae6fdfe654c4765');
+  await t.say(STRANGER, '/find');
   await t.say(STRANGER, '9210000');
   assert.equal(t.db.member(STRANGER), undefined);
-  assert.match(t.calls.at(-1)!.payload.text, /Доступ закрыт/);
+  assert.match(t.calls.at(-1)!.payload.text, /посчитать цену/);
+  assert.ok(t.calls.every((c) => !/Заявки|Нашлось/.test(c.payload.text ?? '')), 'клиент не видит рабочее меню');
   await t.press(STRANGER, 'm:stats:7', 1);
+  await t.press(STRANGER, 'l:1:done', 1);
   assert.equal(t.calls.filter((c) => c.method === 'editMessageText').length, 0);
   await t.say(A, '/start');
   await t.say(B, '/start');
@@ -64,8 +67,47 @@ test('человек не из списка не получает заявки, 
   await t.app.deliver();
   const to = t.calls.filter((c) => c.method === 'sendMessage' && /Заявка #1/.test(c.payload.text)).map((c) => c.payload.chat_id);
   assert.deepEqual(to, [A]);
-  await t.say(STRANGER, '/menu');
-  assert.match(t.calls.at(-1)!.payload.text, /Доступ закрыт/);
+});
+
+test('клиент в Telegram считает цену и оставляет заявку, админ получает карточку', async () => {
+  const t = setup();
+  await t.say(A, '/start');
+  const before = t.calls.length;
+  await t.say(STRANGER, '/start');
+  assert.match(t.calls.at(-1)!.payload.text, /Здравствуйте/);
+  assert.ok(!/пишите прямо в чат/.test(t.calls.at(-1)!.payload.text), 'в Telegram вопросы никто не читает');
+  await t.press(STRANGER, 'c:a:calc', 1);
+  await t.say(STRANGER, '20');
+  await t.press(STRANGER, 'c:v:gloss', 2);
+  await t.press(STRANGER, 'c:v:standard', 3);
+  await t.press(STRANGER, 'c:v:2', 4);
+  await t.press(STRANGER, 'c:v:0', 5);
+  assert.match(t.calls.at(-1)!.payload.text, /Примерный расчёт/);
+  await t.press(STRANGER, 'c:a:lead', 6);
+  await t.say(STRANGER, '8 921 000 00 00');
+  await t.press(STRANGER, 'c:v:1', 7);
+  assert.match(t.calls.at(-1)!.payload.text, /Заявка принята/);
+
+  const lead = t.db.lead(1)!;
+  assert.equal(lead.channel, 'Telegram');
+  assert.equal(lead.phone, '+7 (921) 000-00-00');
+  assert.equal(lead.district, 'Заягорбский');
+  assert.match(lead.calc, /Глянцевое полотно/);
+  assert.equal(t.db.member(STRANGER), undefined);
+
+  await t.app.deliver();
+  const cards = t.calls.slice(before).filter((c) => c.method === 'sendMessage' && /Заявка #1/.test(c.payload.text));
+  assert.deepEqual(cards.map((c) => c.payload.chat_id), [A], 'карточка только админу');
+  assert.match(cards[0].payload.text, /href="tg:\/\/user\?id=333"/);
+});
+
+test('клиент в Telegram: свободный текст возвращает меню, кнопки админа не работают', async () => {
+  const t = setup();
+  await t.say(STRANGER, 'Сколько стоит?');
+  await t.say(STRANGER, 'А ещё вопрос');
+  assert.equal(t.calls.filter((c) => c.method === 'sendMessage').length, 2);
+  await t.press(STRANGER, 'l:1:take', 1);
+  assert.equal(t.calls.filter((c) => c.method === 'sendMessage').length, 2);
 });
 
 test('заявка из файла приходит всем один раз, неполная строка ждёт', async () => {

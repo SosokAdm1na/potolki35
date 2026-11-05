@@ -60,7 +60,8 @@ export interface PendingInput {
   prompt_id: number | null;
 }
 
-export interface VkDialog {
+export interface ClientDialog {
+  channel: string;
   peer_id: number;
   step: string;
   data: string;
@@ -128,11 +129,13 @@ const SCHEMA = `
     prompt_id INTEGER
   );
   CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-  CREATE TABLE IF NOT EXISTS vk_dialogs (
-    peer_id INTEGER PRIMARY KEY,
+  CREATE TABLE IF NOT EXISTS client_dialogs (
+    channel TEXT NOT NULL,
+    peer_id INTEGER NOT NULL,
     step TEXT NOT NULL DEFAULT '',
     data TEXT NOT NULL DEFAULT '{}',
-    quiet_until INTEGER NOT NULL DEFAULT 0
+    quiet_until INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (channel, peer_id)
   );
 `;
 
@@ -143,6 +146,13 @@ export class Db {
     this.db = new DatabaseSync(path);
     this.db.exec('PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 3000;');
     this.db.exec(SCHEMA);
+    // Диалоги ВК раньше лежали в отдельной таблице.
+    if (this.db.prepare("SELECT 1 FROM sqlite_master WHERE name = 'vk_dialogs'").get()) {
+      this.db.exec(`
+        INSERT OR IGNORE INTO client_dialogs SELECT 'vk', peer_id, step, data, quiet_until FROM vk_dialogs;
+        DROP TABLE vk_dialogs;
+      `);
+    }
   }
 
   close() {
@@ -272,11 +282,11 @@ export class Db {
     this.db.prepare('DELETE FROM inputs WHERE tg_id = ?').run(id);
   }
 
-  // --- диалоги с клиентами в ВК
-  vkDialog(peer: number): VkDialog | undefined {
-    return this.db.prepare('SELECT * FROM vk_dialogs WHERE peer_id = ?').get(peer) as unknown as VkDialog | undefined;
+  // --- диалоги с клиентами в ВК и Telegram
+  dialog(channel: string, peer: number): ClientDialog | undefined {
+    return this.db.prepare('SELECT * FROM client_dialogs WHERE channel = ? AND peer_id = ?').get(channel, peer) as unknown as ClientDialog | undefined;
   }
-  saveVkDialog(peer: number, step: string, data: string, quietUntil: number) {
-    this.db.prepare('INSERT OR REPLACE INTO vk_dialogs(peer_id, step, data, quiet_until) VALUES(?, ?, ?, ?)').run(peer, step, data, quietUntil);
+  saveDialog(channel: string, peer: number, step: string, data: string, quietUntil: number) {
+    this.db.prepare('INSERT OR REPLACE INTO client_dialogs(channel, peer_id, step, data, quiet_until) VALUES(?, ?, ?, ?, ?)').run(channel, peer, step, data, quietUntil);
   }
 }

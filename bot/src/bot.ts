@@ -1,11 +1,12 @@
-// Логика бота: доступ, меню, движение заявки и рассылка карточек всей команде.
-import { Bot, GrammyError, type Context, type InlineKeyboard } from 'grammy';
+// Логика бота: рабочая часть для админов и сценарий заявки для всех остальных.
+import { Bot, GrammyError, InlineKeyboard, type Context } from 'grammy';
 import type { Db, Lead, Member, Status } from './db.ts';
+import { ABOUT, createFlow, PHONE, type Incoming, type Keys } from './flow.ts';
 import * as ui from './ui.ts';
 
 export interface BotOptions {
   token: string;
-  admins: Set<number>; // единственные, у кого есть доступ
+  admins: Set<number>; // только они видят заявки и рабочее меню
   apiRoot?: string;
 }
 
@@ -14,6 +15,22 @@ const STATUSES: Status[] = ['new', 'work', 'measure', 'install', 'done', 'reject
 
 const isNotModified = (e: unknown) => e instanceof GrammyError && e.description.includes('message is not modified');
 const isGone = (e: unknown) => e instanceof GrammyError && /message to edit not found|message can't be edited|chat not found|bot was blocked/.test(e.description);
+
+/** Кнопки сценария в виде кнопок Telegram. */
+function clientKeyboard(rows: Keys): InlineKeyboard {
+  const k = new InlineKeyboard();
+  for (const row of rows) {
+    for (const key of row) {
+      if (key.url) k.url(key.label, key.url);
+      else k.text(key.label, key.a ? `c:a:${key.a}` : `c:v:${key.v}`);
+      if (key.color === 'primary') k.primary();
+      if (key.color === 'positive') k.success();
+      if (key.color === 'negative') k.danger();
+    }
+    k.row();
+  }
+  return k;
+}
 
 export function createBot(db: Db, opts: BotOptions) {
   const bot = new Bot(opts.token, opts.apiRoot ? { client: { apiRoot: opts.apiRoot } } : undefined);
@@ -84,14 +101,40 @@ export function createBot(db: Db, opts: BotOptions) {
 
   const team = new WeakMap<Context, Member>();
 
-  // Только личные чаты и только ID из списка админов. Остальные видят одну фразу.
+  const flow = createFlow(db, {
+    channel: 'tg',
+    source: 'Telegram',
+    form: 'Бот Telegram',
+    greeting: `👋 Здравствуйте!\n\n${ABOUT}\n\nЗдесь можно посчитать цену и заказать замер. Если есть вопрос, звоните: ${PHONE}`,
+    done: 'Заявка принята. Мы перезвоним и договоримся о замере.',
+    conversation: false, // в Telegram клиентов не ведём, отвечает только бот
+    send: (peer, text, keys) => bot.api.sendMessage(peer, text, { reply_markup: clientKeyboard(keys), link_preview_options: { is_disabled: true } }),
+  });
+
+  /** Всё, что пишут не админы. Рабочие кнопки и команды здесь не работают. */
+  async function clientUpdate(ctx: Context) {
+    const from = ctx.from!;
+    const client = {
+      name: [from.first_name, from.last_name].filter(Boolean).join(' '),
+      link: from.username ? `https://t.me/${from.username}` : `tg://user?id=${from.id}`,
+    };
+    const base: Incoming = { peer: from.id, client };
+    if (ctx.callbackQuery) {
+      await ctx.answerCallbackQuery();
+      const [prefix, kind, value] = (ctx.callbackQuery.data ?? '').split(':');
+      if (prefix !== 'c' || !value) return;
+      await ctx.editMessageReplyMarkup().catch(() => {}); // старые кнопки нажать повторно нельзя
+      await flow.handle({ ...base, [kind === 'a' ? 'a' : 'v']: value });
+    } else if (ctx.message?.text) {
+      const text = ctx.message.text;
+      await flow.handle({ ...base, text, date: ctx.message.date, a: /^\/(start|menu)\b/.test(text) ? 'menu' : undefined });
+    }
+  }
+
+  // Только личные чаты. Рабочая часть бота доступна только ID из списка админов.
   bot.use(async (ctx, next) => {
     if (ctx.chat?.type !== 'private' || !ctx.from) return;
-    if (!opts.admins.has(ctx.from.id)) {
-      if (ctx.callbackQuery) await ctx.answerCallbackQuery();
-      else await ctx.reply(ui.lockText, HTML);
-      return;
-    }
+    if (!opts.admins.has(ctx.from.id)) return clientUpdate(ctx);
     const known = db.member(ctx.from.id);
     const name = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
     team.set(ctx, known?.active ? known : db.join(ctx.from.id, name, ctx.from.username ?? ''));
@@ -238,13 +281,16 @@ export function createBot(db: Db, opts: BotOptions) {
   bot.catch((e) => console.error('Ошибка обновления:', e.error));
 
   async function setup() {
-    await bot.api.setMyCommands([
-      { command: 'menu', description: 'Заявки' },
-      { command: 'find', description: 'Поиск заявки' },
-    ]);
+    await bot.api.setMyCommands([{ command: 'menu', description: 'Главное меню' }]);
+    for (const id of opts.admins) {
+      await bot.api.setMyCommands([
+        { command: 'menu', description: 'Заявки' },
+        { command: 'find', description: 'Поиск заявки' },
+      ], { scope: { type: 'chat', chat_id: id } }).catch((e) => console.error('Команды админа:', e.message));
+    }
     await bot.api.setChatMenuButton({ menu_button: { type: 'commands' } });
-    await bot.api.setMyShortDescription('Рабочий бот заявок Потолки35');
-    await bot.api.setMyDescription('Рабочий бот заявок Потолки35. Доступ закрыт.');
+    await bot.api.setMyShortDescription('Натяжные потолки в Череповце: расчёт цены и заявка на замер');
+    await bot.api.setMyDescription('Потолки35: натяжные потолки в Череповце и районе. Посчитайте цену и закажите замер.');
   }
 
   return { bot, deliver, syncCards, setup };

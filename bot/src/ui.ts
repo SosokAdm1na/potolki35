@@ -94,6 +94,7 @@ export function leadText(l: Lead, history: LeadEvent[], assignee?: Member): stri
   if (l.amount) out.push(`${em('money')} ${rub(l.amount)}`);
   out.push(`${em('link')} ${esc(l.channel)}`);
   if (l.page?.startsWith('https://vk.com/gim')) out.push(`${em('note')} <a href="${esc(l.page)}">Диалог в ВК</a>`);
+  if (/^(https:\/\/t\.me\/|tg:\/\/user)/.test(l.page ?? '')) out.push(`${em('note')} <a href="${esc(l.page)}">Написать в Telegram</a>`);
 
   if (history.length) {
     const rows = history.map((e) => `${when(e.at)} ${e.actor_name ? `${esc(e.actor_name)}: ` : ''}${esc(e.text)}`);
@@ -251,4 +252,3 @@ export function cancelKeyboard(): InlineKeyboard {
   return new InlineKeyboard().text('Отмена', 'm:cancel').icon(icon('back'));
 }
 
-export const lockText = `${em('lock')} Это рабочий бот Потолки35. Доступ закрыт.`;

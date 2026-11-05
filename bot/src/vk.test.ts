@@ -4,7 +4,8 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Db } from './db.ts';
-import { createVk, DISTRICTS, estimate, normalizePhone, PRICES } from './vk.ts';
+import { createVk } from './vk.ts';
+import { DISTRICTS, estimate, normalizePhone, PRICES } from './flow.ts';
 import { leadText } from './ui.ts';
 import { districts, prices, site } from '../../src/config.ts';
 
