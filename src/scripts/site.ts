@@ -1,4 +1,5 @@
 // Общий клиентский код: UTM-метки, окно заявки, отправка форм, анимации.
+import { site } from '../config';
 
 declare global {
   interface Window {
@@ -7,7 +8,7 @@ declare global {
   }
 }
 
-const METRIKA_ID = 0; // TODO: номер счётчика Яндекс Метрики
+const METRIKA_ID = site.metrika;
 export const goal = (name: string) => {
   try {
     if (METRIKA_ID && window.ym) window.ym(METRIKA_ID, 'reachGoal', name);
