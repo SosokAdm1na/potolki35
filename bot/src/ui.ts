@@ -95,6 +95,7 @@ export function leadText(l: Lead, history: LeadEvent[], assignee?: Member): stri
   out.push(`${em('link')} ${esc(l.channel)}`);
   if (l.page?.startsWith('https://vk.com/gim')) out.push(`${em('note')} <a href="${esc(l.page)}">Диалог в ВК</a>`);
   if (/^(https:\/\/t\.me\/|tg:\/\/user)/.test(l.page ?? '')) out.push(`${em('note')} <a href="${esc(l.page)}">Написать в Telegram</a>`);
+  if (l.page?.startsWith('https://max.ru/')) out.push(`${em('note')} <a href="${esc(l.page)}">Написать в MAX</a>`);
 
   if (history.length) {
     const rows = history.map((e) => `${when(e.at)} ${e.actor_name ? `${esc(e.actor_name)}: ` : ''}${esc(e.text)}`);

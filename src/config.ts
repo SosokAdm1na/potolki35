@@ -8,8 +8,8 @@ export const site = {
   cityIn: 'в Череповце',
   phone: '+7 (965) 744-14-44',
   phoneHref: 'tel:+79657441444',
-  // Пустая ссылка: кнопка не показывается. У MAX нет ссылки по номеру: пока max пуст, кнопка копирует телефон.
-  max: '',
+  // Пустая ссылка: кнопка не показывается.
+  max: 'https://max.ru/se14938869_bot',
   vk: 'https://vk.ru/potolki_che_35',
   telegram: 'https://t.me/potolki_35_bot',
   workHours: 'Ежедневно 9:00–21:00',

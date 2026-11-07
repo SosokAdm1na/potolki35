@@ -31,6 +31,9 @@ const HOME = 'https://потолки35.рф/';
 const POLICY = `${HOME}politika/`;
 export const PHONE = '+7 (965) 744-14-44';
 export const ABOUT = 'Это Потолки35, мы занимаемся установкой качественных, современных натяжных потолков.';
+// Для площадок, где вопросы клиентов никто не читает: Telegram и MAX.
+export const GREETING_NO_CHAT = `👋 Здравствуйте!\n\n${ABOUT}\n\nЗдесь можно посчитать цену и заказать замер. Если есть вопрос, звоните: ${PHONE}`;
+export const DONE_NO_CHAT = 'Заявка принята. Мы перезвоним и договоримся о замере.';
 const HOUR = 3_600_000;
 const SHORT_QUIET = 24 * HOUR; // после разговора с ботом не показываем меню на каждое сообщение
 const LONG_QUIET = 7 * 24 * HOUR; // после заявки или ответа человека
@@ -76,7 +79,7 @@ export interface Incoming {
 }
 
 export interface FlowOptions {
-  channel: 'vk' | 'tg';
+  channel: 'vk' | 'tg' | 'max';
   source: string; // канал в статистике
   form: string;
   greeting: string;

@@ -1,7 +1,7 @@
 // Логика бота: рабочая часть для админов и сценарий заявки для всех остальных.
 import { Bot, GrammyError, InlineKeyboard, type Context } from 'grammy';
 import type { Db, Lead, Member, Status } from './db.ts';
-import { ABOUT, createFlow, PHONE, type Incoming, type Keys } from './flow.ts';
+import { createFlow, DONE_NO_CHAT, GREETING_NO_CHAT, type Incoming, type Keys } from './flow.ts';
 import * as ui from './ui.ts';
 
 export interface BotOptions {
@@ -105,8 +105,8 @@ export function createBot(db: Db, opts: BotOptions) {
     channel: 'tg',
     source: 'Telegram',
     form: 'Бот Telegram',
-    greeting: `👋 Здравствуйте!\n\n${ABOUT}\n\nЗдесь можно посчитать цену и заказать замер. Если есть вопрос, звоните: ${PHONE}`,
-    done: 'Заявка принята. Мы перезвоним и договоримся о замере.',
+    greeting: GREETING_NO_CHAT,
+    done: DONE_NO_CHAT,
     conversation: false, // в Telegram клиентов не ведём, отвечает только бот
     send: (peer, text, keys) => bot.api.sendMessage(peer, text, { reply_markup: clientKeyboard(keys), link_preview_options: { is_disabled: true } }),
   });

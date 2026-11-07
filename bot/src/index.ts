@@ -2,6 +2,7 @@ import { Db } from './db.ts';
 import { createBot } from './bot.ts';
 import { pullLeads } from './intake.ts';
 import { createVk } from './vk.ts';
+import { createMax } from './max.ts';
 
 const need = (key: string) => {
   const value = process.env[key];
@@ -41,9 +42,15 @@ if (process.env.VK_TOKEN) {
   void createVk(db, { token: process.env.VK_TOKEN, groupId: Number(need('VK_GROUP_ID')) }).run(vkStop.signal);
 }
 
+// Бот MAX включается, когда на сервере есть токен.
+const maxServer = process.env.MAX_TOKEN
+  ? createMax(db, { token: process.env.MAX_TOKEN, secret: need('MAX_SECRET') }).listen()
+  : null;
+
 const stop = () => {
   clearInterval(timer);
   vkStop.abort();
+  maxServer?.close();
   void bot.stop();
 };
 process.once('SIGTERM', stop);
