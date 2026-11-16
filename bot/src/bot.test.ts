@@ -78,6 +78,7 @@ test('клиент в Telegram считает цену и оставляет з�
   assert.ok(!/пишите прямо в чат/.test(t.calls.at(-1)!.payload.text), 'в Telegram вопросы никто не читает');
   await t.press(STRANGER, 'c:a:calc', 1);
   await t.say(STRANGER, '20');
+  await t.press(STRANGER, 'c:v:full', 20);
   await t.press(STRANGER, 'c:v:gloss', 2);
   await t.press(STRANGER, 'c:v:standard', 3);
   await t.press(STRANGER, 'c:v:2', 4);

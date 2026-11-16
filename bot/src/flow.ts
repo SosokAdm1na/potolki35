@@ -22,6 +22,7 @@ export const PRICES = {
   hiddenCornice: 2500,
   bathCurtain: 3000,
   minOrder: 7000,
+  canvasOnly: { perM2: 350, minOrder: 5000, measure: 1500 },
   discountPercent: 10,
 };
 
@@ -42,10 +43,12 @@ const LONG_QUIET = 7 * 24 * HOUR; // после заявки или ответа
 type CanvasKey = keyof typeof PRICES.canvas;
 type ProfileKey = keyof typeof PRICES.profile;
 const PROFILES = (Object.keys(PRICES.profile) as (keyof typeof PRICES.profile)[]).filter((k) => !PRICES.hiddenProfiles.includes(k));
-type Step = '' | 'area' | 'canvas' | 'profile' | 'rooms' | 'spots' | 'pipes' | 'phone' | 'district';
+type Step = '' | 'area' | 'mode' | 'canvas' | 'measure' | 'profile' | 'rooms' | 'spots' | 'pipes' | 'phone' | 'district';
 
 export interface Draft {
   area?: number;
+  only?: boolean; // только полотно, без монтажа
+  measure?: boolean;
   canvas?: CanvasKey;
   profile?: ProfileKey;
   rooms?: number;
@@ -110,6 +113,15 @@ export function estimate(d: Required<Pick<Draft, 'area' | 'canvas' | 'profile' |
   return { rows, total, discounted: total * (1 - PRICES.discountPercent / 100) };
 }
 
+/** Только полотно: без скидки, свой минимум, замер платный. */
+export function estimateCanvas(d: { area: number; canvas: CanvasKey; measure: boolean }) {
+  const C = PRICES.canvasOnly;
+  const rows: [string, number][] = [[`${PRICES.canvas[d.canvas].label} полотно без монтажа, ${d.area} м²`, d.area * C.perM2]];
+  if (rows[0][1] < C.minOrder) rows.push(['Минимальный заказ', C.minOrder - rows[0][1]]);
+  if (d.measure) rows.push(['Замер', C.measure]);
+  return { rows, total: rows.reduce((sum, r) => sum + r[1], 0) };
+}
+
 /** Приводит номер к виду сайта. Возвращает null, если это не российский номер. */
 export function normalizePhone(text: string): string | null {
   let d = text.replace(/\D/g, '');
@@ -139,6 +151,7 @@ const PRICES_TEXT = [
   'Цены:',
   '',
   `Полотно с работой: от ${rub(PRICES.canvas.matte.perM2)}/м²`,
+  `Только полотно, без монтажа: ${rub(PRICES.canvasOnly.perM2)}/м², замер ${rub(PRICES.canvasOnly.measure)}`,
   ...PROFILES.filter((k) => PRICES.profile[k].perM).map((k) => `${PRICES.profile[k].label} профиль: +${rub(PRICES.profile[k].perM)}/м`),
   `Точечный светильник: ${rub(PRICES.spotlight)}`,
   `Люстра: от ${rub(PRICES.chandelier)}`,
@@ -152,6 +165,8 @@ const PRICES_TEXT = [
 
 const ASK: Record<Exclude<Step, ''>, [string, Keys]> = {
   area: ['Какая площадь потолка в м²? Напишите число, например 18.', [CANCEL]],
+  mode: ['Что нужно?', [[{ label: 'Под ключ', v: 'full' }, { label: 'Только полотно', v: 'canvas' }], CANCEL]],
+  measure: [`Нужен наш замер? Выезд мастера ${rub(PRICES.canvasOnly.measure)}.`, [[{ label: 'Да, нужен', v: 'yes' }, { label: 'Размеры дам сам', v: 'no' }], CANCEL]],
   canvas: ['Какое полотно нужно?', choice(Object.entries(PRICES.canvas).map(([k, c]) => [c.label, k]))],
   profile: ['Какой профиль?', choice(PROFILES.map((k) => [PRICES.profile[k].label, k]))],
   rooms: ['Сколько комнат?', count(['1', '2', '3', '4', '5'])],
@@ -177,6 +192,13 @@ export function createFlow(db: Db, o: FlowOptions) {
   };
 
   const showEstimate = async (peer: number, d: Draft) => {
+    if (d.only) {
+      const e = estimateCanvas({ area: d.area!, canvas: d.canvas!, measure: !!d.measure });
+      const rows = e.rows.map(([label, sum]) => `${label}: ${rub(sum)}`);
+      const calc = ['ТОЛЬКО ПОЛОТНО, без монтажа', ...rows, `Итого ≈ ${rub(e.total)}`].join('\n');
+      save(peer, '', { area: d.area, calc }, SHORT_QUIET);
+      return o.send(peer, `Примерный расчёт:\n\n${rows.join('\n')}\n\nИтого: ≈ ${rub(e.total)}\n\nПолотно шьём по размерам, монтаж вы делаете сами. Скидка на этот вариант не действует.`, RESULT_KEYS);
+    }
     const e = estimate(d as Parameters<typeof estimate>[0]);
     const rows = e.rows.map(([label, sum]) => `${label}: ${rub(sum)}`);
     const calc = [...rows, `Итого ≈ ${rub(e.total)} (со скидкой ${rub(e.discounted)})`].join('\n');
@@ -223,15 +245,22 @@ export function createFlow(db: Db, o: FlowOptions) {
     switch (current) {
       case 'area':
         if (!(number >= 3 && number <= 300)) return ask(peer, 'area', d, 'Нужно число от 3 до 300.');
-        return ask(peer, 'canvas', { ...d, area: number });
+        return ask(peer, 'mode', { ...d, area: number });
+      case 'mode':
+        if (value !== 'full' && value !== 'canvas') return ask(peer, 'mode', d, 'Выберите кнопкой.');
+        return ask(peer, 'canvas', { ...d, only: value === 'canvas' });
       case 'canvas':
         if (!Object.hasOwn(PRICES.canvas, value)) return ask(peer, 'canvas', d, 'Выберите кнопкой.');
+        if (d.only) return ask(peer, 'measure', { ...d, canvas: value as CanvasKey });
         // Один вид профиля: не спрашиваем ни профиль, ни комнаты (они нужны только для периметра)
         if (PROFILES.length === 1) return ask(peer, 'spots', { ...d, canvas: value as CanvasKey, profile: PROFILES[0] });
         return ask(peer, 'profile', { ...d, canvas: value as CanvasKey });
       case 'profile':
         if (!PROFILES.includes(value as ProfileKey)) return ask(peer, 'profile', d, 'Выберите кнопкой.');
         return ask(peer, value === 'standard' ? 'spots' : 'rooms', { ...d, profile: value as ProfileKey });
+      case 'measure':
+        if (value !== 'yes' && value !== 'no') return ask(peer, 'measure', d, 'Выберите кнопкой.');
+        return showEstimate(peer, { ...d, measure: value === 'yes' });
       case 'rooms':
         if (!whole || number < 1 || number > 20) return ask(peer, 'rooms', d, 'Нужно число комнат.');
         return ask(peer, 'spots', { ...d, rooms: number });

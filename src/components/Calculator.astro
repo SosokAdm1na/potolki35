@@ -25,12 +25,26 @@ const counters = [
           <p class="eyebrow !text-white/50">Калькулятор</p>
           <h2 class="h2 mt-3">Рассчитайте примерную стоимость</h2>
         </div>
-        <p class="max-w-md text-white/60 lg:justify-self-end">Цена с материалами и монтажом. Точную смету замерщик составит бесплатно.</p>
+        <p class="max-w-md text-white/60 lg:justify-self-end">Под ключ или только полотно по вашим размерам. Точную смету замерщик составит бесплатно.</p>
       </div>
     )}
 
     <div class="grid gap-6 lg:grid-cols-[1.35fr_1fr]" data-calc>
       <div class="flex flex-col gap-8 rounded-4xl border border-white/10 bg-white/[0.03] p-5 sm:p-8">
+        <!-- Режим -->
+        <fieldset>
+          <legend class="sr-only">Что нужно</legend>
+          <div class="grid grid-cols-2 gap-1 rounded-full bg-white/10 p-1">
+            {[['full', 'Под ключ'], ['canvas', 'Только полотно']].map(([v, l], i) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="mode" value={v} class="peer sr-only" checked={i === 0} />
+                <span class="block rounded-full px-3 py-2.5 text-center text-sm font-semibold text-white/70 transition peer-checked:bg-glow peer-checked:text-ink peer-focus-visible:outline-2 peer-focus-visible:outline-glow sm:text-base">{l}</span>
+              </label>
+            ))}
+          </div>
+          <p class="mt-3 text-sm text-white/50" data-mode-note>Полотно, материалы и монтаж.</p>
+        </fieldset>
+
         <!-- Площадь -->
         <div>
           <div class="mb-4 flex items-end justify-between gap-4">
@@ -63,7 +77,7 @@ const counters = [
                 <input type="radio" name="canvas" value={k} class="peer sr-only" checked={i === 0} />
                 <span class="flex h-full flex-col gap-1 rounded-2xl border border-white/10 p-2.5 transition peer-checked:border-glow peer-checked:bg-glow/10 peer-focus-visible:outline-2 peer-focus-visible:outline-glow hover:border-white/30 sm:p-3.5">
                   <span class="text-sm font-medium sm:text-base">{c.label}</span>
-                  <span class="text-xs text-white/50">от {c.perM2} ₽/м²</span>
+                  <span class="text-xs text-white/50" data-full>от {c.perM2} ₽/м²</span><span class="hidden text-xs text-white/50" data-canvas>{prices.canvasOnly.perM2} ₽/м²</span>
                 </span>
               </label>
             ))}
@@ -86,8 +100,14 @@ const counters = [
           </div>
         </fieldset>}
 
+        <!-- Замер для режима «только полотно» -->
+        <label class="hidden cursor-pointer items-center justify-between gap-4" data-canvas>
+          <span class="flex flex-col"><span class="font-medium">Нужен замер</span><span class="text-xs text-white/40">выезд мастера, {prices.canvasOnly.measure.toLocaleString('ru-RU')} ₽</span></span>
+          <input type="checkbox" name="measure" checked class="size-6 accent-[#ffb547]" />
+        </label>
+
         <!-- Счётчики -->
-        <div class="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+        <div class="grid gap-x-8 gap-y-4 sm:grid-cols-2" data-full>
           {counters.map((c) => (
             <div class="flex items-center justify-between gap-3">
               <span class="flex flex-col"><span class="text-[15px] font-medium">{c.label}</span><span class="text-xs text-white/40">{c.hint}</span></span>
@@ -107,15 +127,16 @@ const counters = [
           <div class="light-rule absolute inset-x-6 top-0 !h-0.5"></div>
           <p class="text-sm font-medium text-muted">Примерная стоимость</p>
           <p class="mt-2 font-display text-[44px] leading-none font-medium tracking-tight sm:text-[52px]" data-total>—</p>
-          <div class="mt-4 flex items-center gap-3 rounded-2xl bg-glow/20 px-4 py-3">
+          <div class="mt-4 flex items-center gap-3 rounded-2xl bg-glow/20 px-4 py-3" data-full>
             <span class="rounded-full bg-glow px-2.5 py-1 text-xs font-bold">−{site.discountPercent}%</span>
             <span class="text-sm">По заявке с сайта: <b class="font-display text-lg whitespace-nowrap" data-discounted>—</b></span>
           </div>
           <ul class="mt-6 flex flex-col gap-2 border-t border-line pt-5 text-sm" data-breakdown></ul>
           <button type="button" class="btn-primary mt-6 w-full !py-4" data-open-lead data-with-calc data-lead-source="Калькулятор">
-            Заказать замер со скидкой <Icon name="arrow" />
+            <span data-full>Заказать замер со скидкой</span><span class="hidden" data-canvas>Заказать полотно</span> <Icon name="arrow" />
           </button>
-          <p class="mt-3 text-center text-xs text-muted">Замер и смета бесплатно</p>
+          <p class="mt-3 text-center text-xs text-muted" data-full>Замер и смета бесплатно</p>
+          <p class="mt-3 hidden text-center text-xs text-muted" data-canvas>Полотно по вашим размерам, без монтажа и без скидки</p>
         </div>
       </aside>
     </div>
@@ -143,7 +164,18 @@ const counters = [
       range.style.setProperty('--p', p + '%');
     };
 
+    const notes = { full: 'Полотно, материалы и монтаж.', canvas: 'Шьём полотно по размерам, монтаж делаете сами. Размеры можно дать свои или заказать наш замер.' };
+    const noteEl = root.querySelector<HTMLElement>('[data-mode-note]')!;
+    const wrap = root.closest('section')!;
+
     function calc() {
+      const only = root!.querySelector<HTMLInputElement>('input[name="mode"]:checked')?.value === 'canvas';
+      wrap.querySelectorAll<HTMLElement>('[data-full]').forEach((el) => el.classList.toggle('hidden', only));
+      wrap.querySelectorAll<HTMLElement>('[data-canvas]').forEach((el) => {
+        el.classList.toggle('hidden', !only);
+        if (el.tagName === 'LABEL') el.classList.toggle('flex', only);
+      });
+      noteEl.textContent = only ? notes.canvas : notes.full;
       const area = Math.min(300, Math.max(3, Number(num.value) || 3));
       const canvasKey = (root!.querySelector<HTMLInputElement>('input[name="canvas"]:checked')?.value || 'matte') as string;
       const profileKey = (root!.querySelector<HTMLInputElement>('input[name="profile"]:checked')?.value || 'standard') as string;
@@ -153,6 +185,7 @@ const counters = [
       const perRoom = area / state.rooms;
       const perimeter = state.rooms * 4 * Math.sqrt(perRoom);
 
+      if (only) return calcCanvas(area, canvas.label);
       const rows: [string, number][] = [
         [`${canvas.label} полотно, ${area} м²`, area * canvas.perM2],
       ];
@@ -194,10 +227,35 @@ const counters = [
       };
     }
 
+    // Только полотно: своя цена за метр, свой минимум, платный замер, без скидки
+    function calcCanvas(area: number, label: string) {
+      const C = P.canvasOnly;
+      const measure = root!.querySelector<HTMLInputElement>('input[name="measure"]')!.checked;
+      const rows: [string, number][] = [[`${label} полотно без монтажа, ${area} м²`, area * C.perM2]];
+      if (rows[0][1] < C.minOrder) rows.push(['Минимальный заказ', C.minOrder - rows[0][1]]);
+      if (measure) rows.push(['Замер', C.measure]);
+      const total = rows.reduce((s, r) => s + r[1], 0);
+      out.total.textContent = fmt(total);
+      out.list.innerHTML = rows
+        .map(([l, v]) => `<li class="flex justify-between gap-4"><span class="text-muted">${l}</span><span class="font-medium whitespace-nowrap">${fmt(v)}</span></li>`)
+        .join('');
+      const text = [
+        'ТОЛЬКО ПОЛОТНО, без монтажа',
+        `${area} м², помещений: ${state.rooms}`,
+        `Полотно: ${label}`,
+        measure ? `Замер: нужен (${fmt(C.measure)})` : 'Замер: размеры даст сам',
+        `Итого ≈ ${fmt(total)}`,
+      ].join('\n');
+      window.__calc = {
+        text,
+        summary: `<div class="flex justify-between gap-3"><span class="text-white/70">Только полотно: ${area} м², ${label.toLowerCase()}</span><b class="whitespace-nowrap">${fmt(total)}</b></div>`,
+      };
+    }
+
     range.addEventListener('input', () => { num.value = range.value; paintRange(); calc(); });
     num.addEventListener('input', () => { range.value = String(Math.min(150, Number(num.value) || 3)); paintRange(); calc(); });
     num.addEventListener('blur', () => { num.value = String(Math.min(300, Math.max(3, Number(num.value) || 3))); calc(); });
-    root.querySelectorAll('input[type="radio"]').forEach((r) => r.addEventListener('change', calc));
+    root.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((r) => r.addEventListener('change', calc));
     root.querySelectorAll<HTMLElement>('[data-stepper]').forEach((st) => {
       const key = st.dataset.stepper!;
       const min = Number(st.dataset.min), max = Number(st.dataset.max);

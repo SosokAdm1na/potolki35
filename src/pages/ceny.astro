@@ -21,7 +21,7 @@ const extras = [
     <div class="container-x">
       <p class="eyebrow">Прайс</p>
       <h1 class="mt-4 max-w-3xl text-4xl font-medium sm:text-[56px] sm:leading-[1.08]">Цены на натяжные потолки</h1>
-      <p class="mt-5 max-w-2xl text-lg text-muted">Стоимость с материалами и работой. Точную смету замерщик составит бесплатно.</p>
+      <p class="mt-5 max-w-2xl text-lg text-muted">Под ключ с монтажом или только полотно по вашим размерам. Точную смету замерщик составит бесплатно.</p>
     </div>
   </section>
 
@@ -49,6 +49,17 @@ const extras = [
           </tbody>
         </table>
         <p class="mt-6 text-sm text-muted">Минимальная сумма заказа — {fmt(prices.minOrder)}.</p>
+      </div>
+      <div class="rounded-4xl border border-line bg-surface p-6 sm:p-8 lg:col-span-2">
+        <h2 class="text-2xl font-medium">Только полотно, без монтажа</h2>
+        <p class="mt-2 text-muted">Шьём полотно по вашим размерам, монтаж делаете сами. Скидка по заявке на этот вариант не действует.</p>
+        <table class="mt-6 w-full text-left">
+          <tbody class="divide-y divide-line">
+            <tr><td class="py-3.5 pr-4">Полотно любой фактуры</td><td class="py-3.5 text-right font-semibold whitespace-nowrap">{fmt(prices.canvasOnly.perM2)}<span class="font-normal text-muted"> / м²</span></td></tr>
+            <tr><td class="py-3.5 pr-4">Выезд на замер</td><td class="py-3.5 text-right font-semibold whitespace-nowrap">{fmt(prices.canvasOnly.measure)}</td></tr>
+          </tbody>
+        </table>
+        <p class="mt-6 text-sm text-muted">Минимальная сумма заказа полотна — {fmt(prices.canvasOnly.minOrder)}.</p>
       </div>
     </div>
   </section>

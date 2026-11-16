@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Db } from './db.ts';
 import { createVk } from './vk.ts';
-import { DISTRICTS, estimate, normalizePhone, PRICES } from './flow.ts';
+import { DISTRICTS, estimate, estimateCanvas, normalizePhone, PRICES } from './flow.ts';
 import { leadText } from './ui.ts';
 import { districts, prices, site } from '../../src/config.ts';
 
@@ -47,6 +47,25 @@ test('расчёт такой же, как в калькуляторе сайт�
   assert.equal(small.total, 7000);
 });
 
+test('только полотно: своя цена, минимум и замер без скидки', async () => {
+  const small = estimateCanvas({ area: 10, canvas: 'matte', measure: true });
+  assert.equal(small.total, 5000 + 1500);
+  const big = estimateCanvas({ area: 20, canvas: 'gloss', measure: false });
+  assert.equal(big.total, 20 * 350);
+
+  const t = setup();
+  await t.msg('Рассчитать цену', { a: 'calc' });
+  await t.msg('20');
+  await t.msg('Только полотно', { v: 'canvas' });
+  await t.msg('Глянцевое', { v: 'gloss' });
+  assert.match(t.last(), /Нужен наш замер/);
+  await t.msg('Да', { v: 'yes' });
+  assert.match(t.last(), /Глянцевое полотно без монтажа, 20 м²: 7\s000\s₽/);
+  assert.match(t.last(), /Замер: 1\s500\s₽/);
+  assert.match(t.last(), /Итого: ≈ 8\s500\s₽/);
+  assert.doesNotMatch(t.last(), /Со скидкой/);
+});
+
 test('приветствие и цены', async () => {
   const t = setup();
   await t.msg('Начать', { command: 'start' });
@@ -71,6 +90,7 @@ test('расчёт и заявка: карточка получает всё, д
   await t.msg('сколько стоит');
   assert.match(t.last(), /от 3 до 300/);
   await t.msg('18,5');
+  await t.msg('Под ключ', { v: 'full' });
   await t.msg('Матовое', { v: 'matte' });
   await t.msg('4', { v: '4' });
   await t.msg('1', { v: '1' });
@@ -132,13 +152,14 @@ test('сообщение самого бота не останавливает �
   await t.msg('Рассчитать цену', { a: 'calc' });
   await t.vk.handle({ type: 'message_reply', object: { peer_id: PEER, from_id: -77, text: 'Какая площадь' } });
   await t.msg('20');
-  assert.match(t.last(), /полотно/);
+  assert.match(t.last(), /Что нужно/);
 });
 
 test('слово вместо числа не считается нулём', async () => {
   const t = setup();
   await t.msg('x', { a: 'calc' });
   await t.msg('20');
+  await t.msg('Под ключ', { v: 'full' });
   await t.msg('Матовое', { v: 'matte' });
   await t.msg('Стандартный', { v: 'standard' });
   await t.msg('штук пять');

@@ -43,6 +43,8 @@ export const prices = {
   hiddenCornice: 2500, // скрытый карниз ПК-14, пог. м, от
   bathCurtain: 3000, // гардина в ванную АМ-1, пог. м, от
   minOrder: 7000,
+  // Только полотно, без монтажа: без скидки, замер платный
+  canvasOnly: { perM2: 350, minOrder: 5000, measure: 1500 },
 } as const;
 
 export type CanvasKey = keyof typeof prices.canvas;
