@@ -27,6 +27,8 @@ import shadow2 from '../assets/types/shadow-2.jpg';
 import shadow4 from '../assets/types/shadow-4.jpg';
 import shadow5 from '../assets/types/shadow-5.jpg';
 
+import { prices, type ProfileKey } from '../config';
+
 export interface Work {
   photo: ImageMetadata;
   title: string;
@@ -34,7 +36,7 @@ export interface Work {
 }
 
 // Первые шесть показываются на главной, все — на странице работ.
-export const works: Work[] = [
+const all: Work[] = [
   { photo: livingLines, title: 'Гостиная', type: 'Световые линии' },
   { photo: kitchen, title: 'Кухня', type: 'Матовый, накладные светильники' },
   { photo: bedroomShadow, title: 'Спальня', type: 'Теневой профиль' },
@@ -63,3 +65,7 @@ export const works: Work[] = [
   { photo: lines2, title: 'Комната', type: 'Световые линии' },
   { photo: shadow4, title: 'Комната', type: 'Теневой профиль' },
 ];
+
+// Работы со скрытыми видами профиля не показываем.
+const hiddenLabels = prices.hiddenProfiles.map((k) => prices.profile[k as ProfileKey].label);
+export const works = all.filter((w) => !hiddenLabels.some((l) => w.type.includes(l)));

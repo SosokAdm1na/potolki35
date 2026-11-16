@@ -58,8 +58,6 @@ test('расчёт и заявка: кнопка отвечает и убира�
   assert.deepEqual(answer.body.message, { text: 'старый текст', attachments: [] });
   await t.say('20');
   await t.press('v:satin');
-  await t.press('v:floating');
-  await t.press('v:2');
   await t.press('v:4');
   await t.press('v:1');
   assert.match(t.last(), /Примерный расчёт/);

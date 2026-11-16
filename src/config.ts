@@ -34,6 +34,8 @@ export const prices = {
     shadow: { label: 'Теневой', perM: 650, note: 'аккуратный зазор у стены' },
     floating: { label: 'Парящий', perM: 1200, note: 'подсветка по периметру' },
   },
+  // Временно не показываем на сайте и в ботах. Чтобы вернуть, убрать из списка.
+  hiddenProfiles: ['shadow', 'floating'] as string[],
   spotlight: 600, // установка точечного светильника, шт
   chandelier: 700, // установка люстры, шт, от
   lightLine: 2900, // световая линия, пог. м
@@ -45,6 +47,9 @@ export const prices = {
 
 export type CanvasKey = keyof typeof prices.canvas;
 export type ProfileKey = keyof typeof prices.profile;
+
+export const isHiddenProfile = (k: string) => prices.hiddenProfiles.includes(k);
+export const visibleProfiles = (Object.keys(prices.profile) as ProfileKey[]).filter((k) => !isHiddenProfile(k));
 
 export const districts = [
   'Зашекснинский',

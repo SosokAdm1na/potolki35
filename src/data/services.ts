@@ -22,7 +22,7 @@ import lines2 from '../assets/types/lines-2.jpg';
 import lines3 from '../assets/types/lines-3.jpg';
 import lines4 from '../assets/types/lines-4.jpg';
 import lines5 from '../assets/types/lines-5.jpg';
-import { prices } from '../config';
+import { prices, isHiddenProfile, type ProfileKey } from '../config';
 
 export interface Service {
   slug: string;
@@ -37,12 +37,13 @@ export interface Service {
   intro: string;
   features: string[];
   goodFor: string[];
+  profile?: ProfileKey; // вид держится на профиле: скрывается вместе с ним
 }
 
 const perM = (n: number) => n.toLocaleString('ru-RU');
 const canvas = perM(prices.canvas.matte.perM2);
 
-export const services: Service[] = [
+const all: Service[] = [
   {
     slug: 'matovye',
     title: 'Матовые',
@@ -87,6 +88,7 @@ export const services: Service[] = [
   },
   {
     slug: 'paryashchie',
+    profile: 'floating',
     title: 'Парящие',
     h1: 'Парящие натяжные потолки в Череповце',
     short: 'Подсветка по периметру: у стены виден ровный свет.',
@@ -101,6 +103,7 @@ export const services: Service[] = [
   },
   {
     slug: 'tenevye',
+    profile: 'shadow',
     title: 'Теневые',
     h1: 'Теневые натяжные потолки в Череповце',
     short: 'Вместо плинтуса ровный зазор у стены.',
@@ -128,5 +131,7 @@ export const services: Service[] = [
     goodFor: ['Кухня', 'Гостиная', 'Коридор', 'Коммерческие помещения'],
   },
 ];
+
+export const services = all.filter((s) => !s.profile || !isHiddenProfile(s.profile));
 
 export const getService = (slug: string) => services.find((s) => s.slug === slug);

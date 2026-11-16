@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
 import CtaForm from '../components/CtaForm.astro';
-import { site, prices } from '../config';
+import { site, prices, isHiddenProfile } from '../config';
 import { services } from '../data/services';
 const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
 const extras = [
@@ -12,8 +12,8 @@ const extras = [
   ['Обход трубы', fmt(prices.pipe), 'шт'],
   ['Скрытый карниз ПК-14', 'от ' + fmt(prices.hiddenCornice), 'пог. м'],
   ['Гардина в ванную АМ-1', 'от ' + fmt(prices.bathCurtain), 'пог. м'],
-  ['Теневой профиль', fmt(prices.profile.shadow.perM), 'пог. м'],
-  ['Парящий профиль с подсветкой', fmt(prices.profile.floating.perM), 'пог. м'],
+  ...(isHiddenProfile('shadow') ? [] : [['Теневой профиль', fmt(prices.profile.shadow.perM), 'пог. м']]),
+  ...(isHiddenProfile('floating') ? [] : [['Парящий профиль с подсветкой', fmt(prices.profile.floating.perM), 'пог. м']]),
 ];
 ---
 <Layout title={`Цены на натяжные потолки в Череповце 2026 — калькулятор | ${site.name}`} description="Цены на натяжные потолки в Череповце с монтажом. Онлайн-калькулятор стоимости, прайс на светильники и профили. Скидка по заявке с сайта.">

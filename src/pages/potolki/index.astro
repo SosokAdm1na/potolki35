@@ -3,8 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import ServiceGrid from '../../components/ServiceGrid.astro';
 import CtaForm from '../../components/CtaForm.astro';
 import { site } from '../../config';
+import { services } from '../../data/services';
+const kinds = services.map((s) => s.title.toLowerCase()).join(', ');
 ---
-<Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description="Все виды натяжных потолков: матовые, сатиновые, глянцевые, парящие, теневые и световые линии. Цены с монтажом в Череповце.">
+<Layout title={`Виды натяжных потолков в Череповце — цены | ${site.name}`} description={`Виды натяжных потолков: ${kinds}. Цены с монтажом в Череповце.`}>
   <section class="pb-8 pt-10 sm:pb-12 sm:pt-16">
     <div class="container-x">
       <p class="eyebrow">Каталог</p>

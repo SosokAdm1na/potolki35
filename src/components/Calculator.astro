@@ -1,5 +1,5 @@
 ---
-import { prices, site } from '../config';
+import { prices, site, visibleProfiles } from '../config';
 import Icon from './Icon.astro';
 
 interface Props { heading?: boolean }
@@ -70,11 +70,11 @@ const counters = [
           </div>
         </fieldset>
 
-        <!-- Профиль -->
-        <fieldset>
+        <!-- Профиль: если остался один вид, выбор не показываем -->
+        {visibleProfiles.length > 1 && <fieldset>
           <legend class="mb-3 font-medium">Вид примыкания к стене</legend>
           <div class="grid gap-2 sm:grid-cols-3">
-            {Object.entries(prices.profile).map(([k, p], i) => (
+            {visibleProfiles.map((k, i) => { const p = prices.profile[k]; return (
               <label class="cursor-pointer">
                 <input type="radio" name="profile" value={k} class="peer sr-only" checked={i === 0} />
                 <span class="flex h-full flex-col gap-1 rounded-2xl border border-white/10 p-3.5 transition peer-checked:border-glow peer-checked:bg-glow/10 peer-focus-visible:outline-2 peer-focus-visible:outline-glow hover:border-white/30">
@@ -82,9 +82,9 @@ const counters = [
                   <span class="text-xs text-white/50">{p.note}</span>
                 </span>
               </label>
-            ))}
+            ); })}
           </div>
-        </fieldset>
+        </fieldset>}
 
         <!-- Счётчики -->
         <div class="grid gap-x-8 gap-y-4 sm:grid-cols-2">

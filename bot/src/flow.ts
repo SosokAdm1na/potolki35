@@ -14,6 +14,7 @@ export const PRICES = {
     shadow: { label: 'Теневой', perM: 650 },
     floating: { label: 'Парящий', perM: 1200 },
   },
+  hiddenProfiles: ['shadow', 'floating'] as string[], // временно не предлагаем
   spotlight: 600,
   chandelier: 700,
   lightLine: 2900,
@@ -40,6 +41,7 @@ const LONG_QUIET = 7 * 24 * HOUR; // после заявки или ответа
 
 type CanvasKey = keyof typeof PRICES.canvas;
 type ProfileKey = keyof typeof PRICES.profile;
+const PROFILES = (Object.keys(PRICES.profile) as (keyof typeof PRICES.profile)[]).filter((k) => !PRICES.hiddenProfiles.includes(k));
 type Step = '' | 'area' | 'canvas' | 'profile' | 'rooms' | 'spots' | 'pipes' | 'phone' | 'district';
 
 export interface Draft {
@@ -137,8 +139,7 @@ const PRICES_TEXT = [
   'Цены:',
   '',
   `Полотно с работой: от ${rub(PRICES.canvas.matte.perM2)}/м²`,
-  `Теневой профиль: +${rub(PRICES.profile.shadow.perM)}/м`,
-  `Парящий профиль: +${rub(PRICES.profile.floating.perM)}/м`,
+  ...PROFILES.filter((k) => PRICES.profile[k].perM).map((k) => `${PRICES.profile[k].label} профиль: +${rub(PRICES.profile[k].perM)}/м`),
   `Точечный светильник: ${rub(PRICES.spotlight)}`,
   `Люстра: от ${rub(PRICES.chandelier)}`,
   `Световая линия: ${rub(PRICES.lightLine)}/м`,
@@ -152,7 +153,7 @@ const PRICES_TEXT = [
 const ASK: Record<Exclude<Step, ''>, [string, Keys]> = {
   area: ['Какая площадь потолка в м²? Напишите число, например 18.', [CANCEL]],
   canvas: ['Какое полотно нужно?', choice(Object.entries(PRICES.canvas).map(([k, c]) => [c.label, k]))],
-  profile: ['Какой профиль?', choice(Object.entries(PRICES.profile).map(([k, p]) => [p.label, k]))],
+  profile: ['Какой профиль?', choice(PROFILES.map((k) => [PRICES.profile[k].label, k]))],
   rooms: ['Сколько комнат?', count(['1', '2', '3', '4', '5'])],
   spots: ['Сколько точечных светильников? Можно нажать кнопку или написать число.', count(['0', '2', '4', '6', '8'])],
   pipes: ['Сколько труб обходить?', count(['0', '1', '2', '3', '4'])],
@@ -225,9 +226,11 @@ export function createFlow(db: Db, o: FlowOptions) {
         return ask(peer, 'canvas', { ...d, area: number });
       case 'canvas':
         if (!Object.hasOwn(PRICES.canvas, value)) return ask(peer, 'canvas', d, 'Выберите кнопкой.');
+        // Один вид профиля: не спрашиваем ни профиль, ни комнаты (они нужны только для периметра)
+        if (PROFILES.length === 1) return ask(peer, 'spots', { ...d, canvas: value as CanvasKey, profile: PROFILES[0] });
         return ask(peer, 'profile', { ...d, canvas: value as CanvasKey });
       case 'profile':
-        if (!Object.hasOwn(PRICES.profile, value)) return ask(peer, 'profile', d, 'Выберите кнопкой.');
+        if (!PROFILES.includes(value as ProfileKey)) return ask(peer, 'profile', d, 'Выберите кнопкой.');
         return ask(peer, value === 'standard' ? 'spots' : 'rooms', { ...d, profile: value as ProfileKey });
       case 'rooms':
         if (!whole || number < 1 || number > 20) return ask(peer, 'rooms', d, 'Нужно число комнат.');

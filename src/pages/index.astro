@@ -9,11 +9,12 @@ import Steps from '../components/Steps.astro';
 import Reviews from '../components/Reviews.astro';
 import Faq from '../components/Faq.astro';
 import CtaForm from '../components/CtaForm.astro';
-import { site, prices } from '../config';
+import { site, prices, isHiddenProfile } from '../config';
+const kinds = ['матовые', !isHiddenProfile('floating') && 'парящие', !isHiddenProfile('shadow') && 'теневые', 'световые линии'].filter(Boolean).join(', ');
 ---
 <Layout
   title={`Натяжные потолки в Череповце под ключ — от ${prices.canvas.matte.perM2} ₽/м² | ${site.name}`}
-  description={`Натяжные потолки ${site.cityIn}: матовые, парящие, теневые, световые линии. Бесплатный замер, монтаж за 1 день, скидка ${site.discountPercent}% по заявке с сайта.`}
+  description={`Натяжные потолки ${site.cityIn}: ${kinds}. Бесплатный замер, монтаж за 1 день, скидка ${site.discountPercent}% по заявке с сайта.`}
 >
   <!-- Первый экран -->
   <section class="pb-10 pt-8 sm:pb-14 sm:pt-12">

@@ -72,8 +72,6 @@ test('расчёт и заявка: карточка получает всё, д
   assert.match(t.last(), /от 3 до 300/);
   await t.msg('18,5');
   await t.msg('Матовое', { v: 'matte' });
-  await t.msg('Парящий', { v: 'floating' });
-  await t.msg('2', { v: '2' });
   await t.msg('4', { v: '4' });
   await t.msg('1', { v: '1' });
   assert.match(t.last(), /Примерный расчёт/);
@@ -91,7 +89,8 @@ test('расчёт и заявка: карточка получает всё, д
   assert.equal(lead.district, 'Северный');
   assert.equal(lead.channel, 'ВКонтакте');
   assert.equal(lead.area, '18.5 м²');
-  assert.match(lead.calc, /Парящий профиль/);
+  assert.match(lead.calc, /Матовое полотно, 18.5 м²/);
+  assert.doesNotMatch(lead.calc, /профиль/);
   assert.equal(lead.delivered, 0, 'заявка ждёт отправки в Telegram');
   assert.match(leadText(lead, []), /href="https:\/\/vk\.com\/gim77\?sel=555"/);
 
